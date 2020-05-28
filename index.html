@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AD310-RPI</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Prata&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="css/animate.css">
+
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <link rel="stylesheet" href="css/aos.css">
+
+    <link rel="stylesheet" href="css/ionicons.min.css">
+
+		<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
+		<link rel="stylesheet" href="css/nouislider.css">
+
+
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/icomoon.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+      window.onload = function() {
+        require('./renderer')
+      }
+    </script>
+
+    <style>
+      @font-face {
+        font-family: 'SegmentA1';
+        src: url(./fonts/SEA_____.ttf) format('truetype');
+      }
+      #displayMsg {
+        font-family: SegmentA1;
+        text-align: right;
+      }
+
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-sm navbar-light bg-primary">
+		  <a class="navbar-brand">AD310-RPI</a>
+      <div class="collapse navbar-collapse ml-auto" id="navbarsExample02">
+		    <ul class="navbar-nav ml-auto">
+          <li class="nav-item d-flex">
+            <a href="#" class="nav-link d-flex align-items-center icon"><i class="ion-ios-send"></i></a>
+          </li>
+          <li class="nav-item d-flex">
+            <a href="#" class="nav-link d-flex align-items-center icon"><i class="ion-logo-buffer"></i></a>
+          </li>
+          <li class="dropdown nav-item d-flex">
+            <a href="#" class="dropdown-toggle nav-link d-flex align-items-center icon" data-toggle="dropdown" aria-expanded="false">
+              <i class="ion-ios-settings"></i>
+              <b class="caret"></b>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <h6 class="dropdown-header">Dropdown header</h6>
+              <a href="#" class="dropdown-item">Action</a>
+              <a href="#" class="dropdown-item">Another action</a>
+              <a href="#" class="dropdown-item">Something else here</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item">Separated link</a>
+              <div class="dropdown-divider"></div>
+              <a href="#" class="dropdown-item">One more separated link</a>
+            </div>
+          </li>
+        </ul>
+		  </div>
+		</nav>
+
+    <div class="container-fluid p-md-3">
+      <div class="row">
+        <div class="col-md-12">
+          <h2 class="heading-section mb-5 pb-md-3">
+
+          </h2>
+        </div>
+      </div>
+      <div class="row" style="text-align: center">
+        <div class="container-fluid col-sm-2">
+          <div class="col-sm-12 mb-3">
+            <span class="badge badge-pill badge-secondary p-3 px-3" id="labelStable">STABLE</span>
+          </div>
+          <div class="col-sm-12 mb-3">
+            <span class="badge badge-pill badge-secondary p-3 px-3" id="labelHold">HOLD</span>
+          </div>
+          <div class="col-sm-12 mb-3">
+            <span class="badge badge-pill badge-secondary p-3 px-3" id="labelZero">ZERO</span>
+          </div>
+          <div class="col-sm-12 mb-3">
+            <span class="badge badge-pill badge-secondary p-3 px-3" id="labelNet">NET</span>
+          </div>
+        </div>
+        <div class="container-fluid col-sm-5">
+          <div class="input-group">
+            <input type="text" class="form-control" id="displayMsg" style="font-size: 30px;" value="OFF" readonly>
+          </div>
+        </div>
+        <div class="container-fluid col-sm-1">
+          <div class="input-group">
+            <h2 id="unit"></h2>
+          </div>
+        </div>
+        <div class="container-fluid col-sm-4">
+          <div class="col-sm-12 mb-3">
+            <button class="btn btn-primary mb-3" type="button" id="setClearTare" disabled>CLEAR</br>TARE</button>
+            <button class="btn btn-primary mb-3" type="button" id="setZeroTare" disabled>ZERO</br>TARE</button>
+          </div>
+          <div class="col-sm-12 mb-3">
+            <button class="btn btn-primary mb-3" type="button" id="setGrossNet" disabled>GROSS</br>NET</button>
+            <button class="btn btn-primary mb-3" type="button" id="setHold" disabled>HOLD</button>
+          </div>
+          <div class="col-sm-12">
+            <button class="btn btn-primary mb-3" type="button" id="onOff">ON</button>
+            <button class="btn btn-primary mb-3" type="button" id="print" disabled>PRINT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
