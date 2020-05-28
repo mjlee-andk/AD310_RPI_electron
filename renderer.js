@@ -1,7 +1,7 @@
 const { BrowserWindow, ipcRenderer } = require('electron')
 
 ipcRenderer.on('rx_data', (event, data) => {
-  document.getElementById("displayMsg").value = data.displayMsg;
+  document.getElementById("displayMsg").innerHTML = data.displayMsg;
 
   // 단위 표시
   const unitTag = document.getElementById("unit");

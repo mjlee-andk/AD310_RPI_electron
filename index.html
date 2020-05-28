@@ -41,6 +41,12 @@
       #displayMsg {
         font-family: SegmentA1;
         text-align: right;
+        font-size: 105px;
+      }
+      .btn.btn-primary {
+        width: 80px;
+        height: 80px;
+        font-size: 15px;
       }
 
     </style>
@@ -99,28 +105,29 @@
             <span class="badge badge-pill badge-secondary p-3 px-3" id="labelNet">NET</span>
           </div>
         </div>
-        <div class="container-fluid col-sm-5">
-          <div class="input-group">
-            <input type="text" class="form-control" id="displayMsg" style="font-size: 30px;" value="OFF" readonly>
-          </div>
+        <div class="container-fluid col-sm-6">
+          <!-- <div class="input-group" style="height:100%">
+            <input type="text" id="displayMsg" style="font-size: 30px;" value="OFF" readonly>
+          </div> -->
+          <h1 id="displayMsg" style="display:inline"></h1>
+          <h2 id="unit" style="display:inline"></h2>
         </div>
-        <div class="container-fluid col-sm-1">
-          <div class="input-group">
-            <h2 id="unit"></h2>
-          </div>
-        </div>
+        <!-- <div class="container-fluid col-sm-1">
+
+
+        </div> -->
         <div class="container-fluid col-sm-4">
-          <div class="col-sm-12 mb-3">
-            <button class="btn btn-primary mb-3" type="button" id="setClearTare" disabled>CLEAR</br>TARE</button>
-            <button class="btn btn-primary mb-3" type="button" id="setZeroTare" disabled>ZERO</br>TARE</button>
-          </div>
-          <div class="col-sm-12 mb-3">
-            <button class="btn btn-primary mb-3" type="button" id="setGrossNet" disabled>GROSS</br>NET</button>
-            <button class="btn btn-primary mb-3" type="button" id="setHold" disabled>HOLD</button>
+          <div class="col-sm-12">
+            <button class="btn btn-primary mb-2" type="button" id="setClearTare" disabled>CLEAR</br>TARE</button>
+            <button class="btn btn-primary mb-2" type="button" id="setZeroTare" disabled>ZERO</br>TARE</button>
           </div>
           <div class="col-sm-12">
-            <button class="btn btn-primary mb-3" type="button" id="onOff">ON</button>
-            <button class="btn btn-primary mb-3" type="button" id="print" disabled>PRINT</button>
+            <button class="btn btn-primary mb-2" type="button" id="setGrossNet" disabled>GROSS</br>NET</button>
+            <button class="btn btn-primary mb-2" type="button" id="setHold" disabled>HOLD</button>
+          </div>
+          <div class="col-sm-12">
+            <button class="btn btn-primary mb-2" type="button" id="onOff">ON</button>
+            <button class="btn btn-primary mb-2" type="button" id="print" disabled>PRINT</button>
           </div>
         </div>
       </div>
