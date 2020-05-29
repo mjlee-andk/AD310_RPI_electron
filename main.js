@@ -69,12 +69,25 @@ class scaleFlag {
     // 대기 시간
     this.waiting_sec = 0
   }
+}
 
+class pcSettingFlag{
+  constructor() {
+    this.port = 'COM1';
+    this.baudrate = 2400;
+    this.databits = 7;
+    this.parity = 'even';
+    this.stopbits = 1;
+    this.terminator = '\r\n';
+  }
 }
 
 var sp;
 var win;
+var settingWin;
+var pcSettingWin;
 var scale = new scaleFlag();
+var pcSetting = new pcSettingFlag();
 
 var createWindow = function() {
   // 브라우저 창을 생성합니다.
@@ -93,7 +106,7 @@ var createWindow = function() {
   win.webContents.openDevTools();
 }
 
-var createSettingWindow = function() {
+var openSettingWindow = function() {
   // 브라우저 창을 생성합니다.
   settingWin = new BrowserWindow({
     parent: win,
@@ -109,12 +122,31 @@ var createSettingWindow = function() {
   settingWin.webContents.openDevTools();
 }
 
-// 포트목록 불러오기
-SerialPort.list().then(
-  ports => ports.forEach(function(item, index, array){
-    console.log(item.path)
+var openPCSettingWindow = function() {
+  // 브라우저 창을 생성합니다.
+  pcSettingWin = new BrowserWindow({
+    parent: win,
+    width: 757,
+    height: 400,
+    webPreferences: {
+      nodeIntegration: true
+    },
+    frame: false
   })
-);
+
+  pcSettingWin.loadFile('pcsetting.html');
+  pcSettingWin.webContents.openDevTools();
+
+  pcSettingWin.webContents.on('did-finish-load', () => {
+    pcSettingWin.webContents.send('pc_setting_data', pcSetting)
+    // 포트목록 불러오기
+    SerialPort.list().then(
+      ports => {
+        pcSettingWin.webContents.send('port_list', ports);
+      }
+    );
+  })
+}
 
 //TODO scale의 변수명 수정 및 scale 클래스 추가, makeFormat 함수 만들기
 const readHeader = function(rx) {
@@ -241,6 +273,21 @@ result = Number(value).toString();
  return result;
 }
 
+ipcMain.on('open_pc_setting_window', (event, arg) =>{
+  console.log('open_pc_setting_window');
+  openPCSettingWindow();
+})
+
+ipcMain.on('open_setting_window', (event, arg) =>{
+  console.log('open_setting_window');
+  openSettingWindow();
+})
+
+ipcMain.on('pc_setting_data', (event, data) => {
+  console.log('pc_setting_data');
+  console.log(data);
+})
+
 ipcMain.on('set_clear_tare', (event, arg) =>{
   console.log('set_clear_tare');
   const command = 'CT' + '\r\n';
@@ -295,8 +342,7 @@ ipcMain.on('set_hold', (event, arg) =>{
 
 ipcMain.on('print', (event, arg) => {
   console.log('print');
-  // TODO 아래 코드 수정해야함.
-  createSettingWindow();
+  // TODO 프린트 기능 추가 필요
 })
 
 // TODO 주석처리한부분 코드 수정하기
