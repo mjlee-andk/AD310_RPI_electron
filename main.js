@@ -24,7 +24,7 @@ class scaleFlag {
     this.write = false
     this.hi = 0
     this.lo = 0
-    this.terminator = '\r\n'  // CRLF
+    this.terminator = 'CRLF'  // CRLF
     this.block = false
 
     // 단위 표시
@@ -74,11 +74,11 @@ class scaleFlag {
 class pcSettingFlag{
   constructor() {
     this.port = 'COM1';
-    this.baudrate = 2400;
+    this.baudrate = 24;
     this.databits = 7;
     this.parity = 'even';
     this.stopbits = 1;
-    this.terminator = '\r\n';
+    this.terminator = 'CRLF';
   }
 }
 
@@ -138,11 +138,11 @@ var openPCSettingWindow = function() {
   pcSettingWin.webContents.openDevTools();
 
   pcSettingWin.webContents.on('did-finish-load', () => {
-    pcSettingWin.webContents.send('pc_setting_data', pcSetting)
     // 포트목록 불러오기
     SerialPort.list().then(
       ports => {
         pcSettingWin.webContents.send('port_list', ports);
+        pcSettingWin.webContents.send('pc_setting_data', pcSetting)
       }
     );
   })
@@ -285,7 +285,7 @@ ipcMain.on('open_setting_window', (event, arg) =>{
 
 ipcMain.on('pc_setting_data', (event, data) => {
   console.log('pc_setting_data');
-  console.log(data);
+  pcSetting = data;
 })
 
 ipcMain.on('set_clear_tare', (event, arg) =>{
@@ -351,19 +351,26 @@ ipcMain.on('on_off', (event, arg) =>{
 
   // 최초 실행시
   if(sp == undefined) {
-    sp = new SerialPort('COM3',{
-      baudRate: 4800,
-      parity: 'none',
-      dataBits: 8,
-      stopBits: 1
-    });
-    const lineStream = sp.pipe(new Readline({ delimiter: '\r\n' }));
-    lineStream.on('data', function(rx) {
-      readHeader(rx);
-      win.webContents.send('rx_data', scale)
-    })
-    win.webContents.send('on_off', 'OFF');
-    return;
+    try {
+      sp = new SerialPort(pcSetting.port,{
+        baudRate: pcSetting.baudrate * 100,
+        parity: pcSetting.parity,
+        dataBits: parseInt(pcSetting.databits),
+        stopBits: parseInt(pcSetting.stopbits)
+      });
+
+      const lineStream = sp.pipe(new Readline({ delimiter: pcSetting.terminator == 'CRLF' ? '\r\n' : '\r' }));
+      lineStream.on('data', function(rx) {
+        readHeader(rx);
+        win.webContents.send('rx_data', scale)
+      })
+      win.webContents.send('on_off', 'OFF');
+      return;
+    }
+    catch(e) {
+      console.log(e);
+      console.log('Cannot open port.');
+    }
   }
 
   if(!sp.isOpen) {
@@ -378,12 +385,11 @@ ipcMain.on('on_off', (event, arg) =>{
 
       // 스트림 모드 날리기
 
-      const lineStream = sp.pipe(new Readline({ delimiter: '\r\n' }));
+      const lineStream = sp.pipe(new Readline({ delimiter: pcSetting.terminator == 'CRLF' ? '\r\n' : '\r' }));
       lineStream.on('data', function(rx) {
         readHeader(rx);
         win.webContents.send('rx_data', scale)
       })
-      // 버튼 OFF 표시
       win.webContents.send('on_off', 'OFF');
       return;
     }
@@ -417,7 +423,7 @@ ipcMain.on('on_off', (event, arg) =>{
       win.webContents.send('rx_data', scale);
     }
     catch(e) {
-
+      console.log(e);
     }
   }
 })
