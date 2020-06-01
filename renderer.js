@@ -7,6 +7,7 @@ const openPCSettingWindowButton = document.getElementById("openPCSettingWindow")
 const openSettingWindowButton = document.getElementById("openSettingWindow");
 
 closeMainWindowButton.addEventListener('click', function(){
+  ipcRenderer.send('set_stream_mode', 'ok');
   var window = remote.getCurrentWindow();
   window.close();
 })

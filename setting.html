@@ -6,66 +6,198 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Prata&display=swap" rel="stylesheet">
+    <!--  Social tags -->
+    <meta name="keywords" content="neumorphism, neumorphism ui, neomorphism, neomorphism ui, neomorphism css, neumorphism css, neumorph, neumorphic, design system, login, form, table, tables, card, cards, navbar, modal, icons, icons, map, chat, carousel, menu, datepicker, gallery, slider, date, social, dropdown, search, tab, nav, footer, date picker, forms, tabs, time, button, select, input, timeline, cart, about us, account, log in, blog, profile, portfolio, landing page, ecommerce, shop, landing, register, app, contact, one page, sign up, signup, store, bootstrap 4, bootstrap4, dashboard, bootstrap 4 dashboard, bootstrap 4 design, bootstrap 4 system, bootstrap 4, bootstrap 4 uit kit, bootstrap 4 kit, themesberg, html kit, html css template, web template, bootstrap, bootstrap 4, css3 template, frontend, responsive bootstrap template, bootstrap ui kit, responsive ui kit">
+    <meta name="description" content="Start developing neumorphic web applications and pages using Neumorphism UI. It features over 100 individual components and 5 example pages.">
 
-    <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
-    <link rel="stylesheet" href="css/animate.css">
+    <!-- Schema.org markup for Google+ -->
+    <meta itemprop="name" content="Neumorphism UI by Themesberg">
+    <meta itemprop="description" content="Start developing neumorphic web applications and pages using Neumorphism UI. It features over 100 individual components and 5 example pages.">
+    <meta itemprop="image" content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/neumorphism-ui/neumorphism-thumbnail.jpg">
 
-    <link rel="stylesheet" href="css/owl.carousel.min.css">
-    <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="css/magnific-popup.css">
+    <!-- Twitter Card data -->
+    <meta name="twitter:card" content="product">
+    <meta name="twitter:site" content="@themesberg">
+    <meta name="twitter:title" content="Neumorphism UI by Themesberg">
+    <meta name="twitter:description" content="Start developing neumorphic web applications and pages using Neumorphism UI. It features over 100 individual components and 5 example pages.">
+    <meta name="twitter:creator" content="@themesberg">
+    <meta name="twitter:image" content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/neumorphism-ui/neumorphism-thumbnail.jpg">
 
-    <link rel="stylesheet" href="css/aos.css">
+    <!-- Open Graph data -->
+    <meta property="fb:app_id" content="214738555737136">
+    <meta property="og:title" content="Neumorphism UI by Themesberg" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://demo.themesberg.com/neumorphism-ui/" />
+    <meta property="og:image" content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/neumorphism-ui/neumorphism-thumbnail.jpg"/>
+    <meta property="og:description" content="Start developing neumorphic web applications and pages using Neumorphism UI. It features over 100 individual components and 5 example pages." />
+    <meta property="og:site_name" content="Themesberg" />
 
-    <link rel="stylesheet" href="css/ionicons.min.css">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="120x120" href="./assets/img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="./assets/img/favicon/site.webmanifest">
+    <link rel="mask-icon" href="./assets/img/favicon/safari-pinned-tab.svg" color="#ffffff">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
 
-		<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
-		<link rel="stylesheet" href="css/nouislider.css">
+    <link type="text/css" href="./css/neumorphism.css" rel="stylesheet">
 
-
-    <link rel="stylesheet" href="css/flaticon.css">
-    <link rel="stylesheet" href="css/icomoon.css">
-    <link rel="stylesheet" href="css/style.css">
     <script>
       window.onload = function() {
-        require('./setting')
+        require('./setting');
       }
     </script>
+    <style>
+      .form-check-label {
+        width: 25% !important;
+      }
+    </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm navbar-light bg-primary">
-		  <a class="navbar-brand">설정</a>
-      <div class="collapse navbar-collapse ml-auto" id="navbarsExample02">
-		    <ul class="navbar-nav ml-auto">
-          <li class="nav-item d-flex">
-            <a href="#" class="nav-link d-flex align-items-center icon">
-              <i class="ion-ios-settings"></i>
-            </a>
-          </li>
-        </ul>
-		  </div>
-		</nav>
-
-    <div class="container-fluid p-md-3">
-      <div class="row">
-        <div class="col-md-12">
-          <h2 class="heading-section mb-5 pb-md-3">
-
-          </h2>
+    <div class="p-3">
+      <div class="position-relative mt-2 mb-2">
+        <span class="display-2">설정</span>
+        <div class="d-inline" style="float:right;">
+          <a target="_blank" class="btn btn-primary mr-3" style="float:right;" id="closeSettingWindow">Back</a>
+          <a target="_blank" class="btn btn-primary mr-3" style="float:right;" id="settingOk">Confirm</a>
         </div>
       </div>
-      <div class="row" style="text-align: center">
-        <div class="container-fluid col-sm-4">
+      <div class="row mt-4">
+          <div class="col">
+              <div class="card bg-primary shadow-soft border-light">
+                  <div class="row p-3">
+                      <div class="offset-1">
+                      </div>
+                      <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
+                          <div class="bg-primary mt-2">
+                              <h1 class="display-4 mb-3">Baudrate</h1>
+                              <h1 class="display-4">Databits</h1>
+                              <h1 class="display-4">Parity</h1>
+                              <h1 class="display-4">Stopbits</h1>
+                              <h1 class="display-4">Terminator</h1>
+                          </div>
+                      </div>
+                      <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
+                        <div class="bg-primary">
+                          <div class="bg-primary mt-1 w-50">
+                            <select id="baudrateSelect" class="custom-select mr-sm-2">
+                                <option value="24">2400</option>
+                                <option value="48">4800</option>
+                                <option value="96">9600</option>
+                                <option value="192">19200</option>
+                                <option value="384">38400</option>
+                            </select>
+                          </div>
+                          <div class="bg-primary mt-3">
+                            <fieldset>
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="dataBitsRadios" id="dataBitsRadios1" value="7" checked="">
+                                  <label class="form-check-label" for="dataBitsRadios1">
+                                    7bits
+                                  </label>
 
-        </div>
-        <div class="container-fluid col-sm-4">
+                                  <input class="form-check-input" type="radio" name="dataBitsRadios" id="dataBitsRadios2" value="8">
+                                  <label class="form-check-label" for="dataBitsRadios2">
+                                    8bits
+                                  </label>
+                                </div>
+                            </fieldset>
+                          </div>
+                          <div class="bg-primary mt-3">
+                            <fieldset>
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios1" value="0" checked="">
+                                  <label class="form-check-label" for="parityRadios1">
+                                    None
+                                  </label>
 
+                                  <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios2" value="1">
+                                  <label class="form-check-label" for="parityRadios2">
+                                    Odd
+                                  </label>
+
+                                  <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios3" value="2">
+                                  <label class="form-check-label" for="parityRadios3">
+                                    Even
+                                  </label>
+                                </div>
+                            </fieldset>
+                          </div>
+                          <div class="bg-primary mt-3">
+                            <fieldset>
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="stopbitsRadios" id="stopbitsRadios1" value="1" checked="">
+                                  <label class="form-check-label" for="stopbitsRadios1">
+                                    1bit
+                                  </label>
+
+                                  <input class="form-check-input" type="radio" name="stopbitsRadios" id="stopbitsRadios2" value="2">
+                                  <label class="form-check-label" for="stopbitsRadios2">
+                                    2bits
+                                  </label>
+                                </div>
+                            </fieldset>
+                          </div>
+                          <div class="bg-primary mt-3">
+                            <fieldset>
+                                <div class="form-check">
+                                  <input class="form-check-input" type="radio" name="terminatorRadios" id="terminatorRadios1" value="1" checked="">
+                                  <label class="form-check-label" for="terminatorRadios1">
+                                    CRLF
+                                  </label>
+
+                                  <input class="form-check-input" type="radio" name="terminatorRadios" id="terminatorRadios2" value="2">
+                                  <label class="form-check-label" for="terminatorRadios2">
+                                    CR
+                                  </label>
+                                </div>
+                            </fieldset>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
         </div>
-        <div class="container-fluid col-sm-4">
-            <button class="btn btn-primary mb-3" type="button" id="settingOk">OK</button>
+      <!-- <div class="row">
+        <div class="col-12">
+          <div class="nav-wrapper position-relative mb-4">
+              <ul class="nav nav-pills flex-column flex-sm-row" id="tabs-text" role="tablist">
+                  <li class="nav-item mr-sm-3 mr-md-0">
+                      <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true">Account</a>
+                  </li>
+                  <li class="nav-item mr-sm-3 mr-md-0">
+                      <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-toggle="tab" href="#tabs-text-2" role="tab" aria-controls="tabs-text-2" aria-selected="false">Profile</a>
+                  </li>
+                  <li class="nav-item mr-sm-3 mr-md-0">
+                      <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-3-tab" data-toggle="tab" href="#tabs-text-3" role="tab" aria-controls="tabs-text-3" aria-selected="false">Messages</a>
+                  </li>
+              </ul>
+          </div>
+          <div class="card shadow-inset bg-primary border-light p-4 rounded">
+              <div class="card-body p-0">
+                  <div class="tab-content" id="tabcontent1">
+                      <div class="tab-pane fade active show" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
+                          <p>Exercitation photo booth stumptown tote bag Banksy, elit small batch freegan sed. Craft beer elit seitan exercitation, photo booth et 8-bit kale chips proident chillwave deep v laborum. Aliquip veniam delectus,
+                              Marfa eiusmod Pinterest in do umami readymade swag.</p>
+                          <p>Day handsome addition horrible sensible goodness two contempt. Evening for married his account removal. Estimable me disposing of be moonlight cordially curiosity.</p>
+                      </div>
+                      <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
+                          <p>Photo booth stumptown tote bag Banksy, elit small batch freegan sed. Craft beer elit seitan exercitation, photo booth et 8-bit kale chips proident chillwave deep v laborum. Aliquip veniam delectus, Marfa eiusmod
+                              Pinterest in do umami readymade swag.</p>
+                          <p>Day handsome addition horrible sensible goodness two contempt. Evening for married his account removal. Estimable me disposing of be moonlight cordially curiosity.</p>
+                      </div>
+                      <div class="tab-pane fade" id="tabs-text-3" role="tabpanel" aria-labelledby="tabs-text-3-tab">
+                          <p>Exercitation photo booth stumptown tote bag Banksy, elit small batch freegan sed. Craft beer elit seitan exercitation, photo booth et 8-bit kale chips proident chillwave deep v laborum. Aliquip veniam delectus,
+                              Marfa eiusmod Pinterest in do umami readymade swag.</p>
+                          <p>Day handsome addition horrible sensible goodness two contempt. Evening for married his account removal. Estimable me disposing of be moonlight cordially curiosity.</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </body>
 </html>

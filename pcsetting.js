@@ -1,14 +1,16 @@
 const { BrowserWindow, ipcRenderer } = require('electron')
 const remote = require('electron').remote;
 
-class pcSettingFlag{
-  constructor() {
-    this.port = 'COM1';
-    this.baudrate = 2400;
-    this.databits = 7;
-    this.parity = 'even';
-    this.stopbits = 1;
-    this.terminator = 'CRLF';
+const CONSTANT = require('./constant');
+
+class uartFlag{
+  constructor(port, baudrate, databits, parity, stopbits, terminator) {
+    this.port = port;
+    this.baudrate = baudrate;
+    this.databits = databits;
+    this.parity = parity;
+    this.stopbits = stopbits;
+    this.terminator = terminator;
   }
 }
 
@@ -38,9 +40,9 @@ const stopbitsRadios2 = document.getElementById("stopbitsRadios2");
 const terminatorRadios1 = document.getElementById("terminatorRadios1");
 const terminatorRadios2 = document.getElementById("terminatorRadios2");
 
-// PC 설정창 시작시 PC 설정값 받아오기
-ipcRenderer.on('pc_setting_data', (event, data) => {
-  console.log('pc_setting_data');
+// PC설정 화면 시작시 데이터 받아오기
+ipcRenderer.on('get_pc_setting_data', (event, data) => {
+  console.log('get_pc_setting_data');
   portSelect.value = data.port;
   baudrateSelect.value = data.baudrate;
   if(data.databits == 7) {
@@ -49,13 +51,13 @@ ipcRenderer.on('pc_setting_data', (event, data) => {
   else if(data.databits == 8) {
     dataBitsRadios2.checked = true;
   }
-  if(data.parity == 'none') {
+  if(data.parity == CONSTANT.PARITY_NONE) {
     parityRadios1.checked = true;
   }
-  else if(data.parity == 'odd') {
+  else if(data.parity == CONSTANT.PARITY_ODD) {
     parityRadios2.checked = true;
   }
-  else if(data.parity == 'even') {
+  else if(data.parity == CONSTANT.PARITY_EVEN) {
     parityRadios3.checked = true;
   }
   if(data.stopbits == 1) {
@@ -64,10 +66,10 @@ ipcRenderer.on('pc_setting_data', (event, data) => {
   else if(data.stopbits == 2) {
     stopbitsRadios2.checked = true;
   }
-  if(data.terminator == 'CRLF') {
+  if(data.terminator == CONSTANT.CRLF) {
     terminatorRadios1.checked = true;
   }
-  else if(data.terminator == 'CR') {
+  else if(data.terminator == CONSTANT.CR) {
     terminatorRadios2.checked = true;
   }
 });
@@ -84,9 +86,9 @@ ipcRenderer.on('port_list', (event, data) => {
   })
 });
 
-// pc setting에서 선택된 값들 가져오기
+// pc setting에서 설정한 값들 보내기
 var tmpfunc = function() {
-  var pcSettingNow = new pcSettingFlag();
+  var pcSettingNow = new uartFlag('COM1', 24, 7, CONSTANT.PARITY_EVEN, 1, CONSTANT.CRLF);
 
   pcSettingNow.port = portSelect.options[portSelect.selectedIndex].value;
   pcSettingNow.baudrate = baudrateSelect.options[baudrateSelect.selectedIndex].value;
@@ -122,7 +124,7 @@ var tmpfunc = function() {
     pcSettingNow.terminator = terminatorRadios2.value;
   }
 
-  ipcRenderer.send('pc_setting_data', pcSettingNow);
+  ipcRenderer.send('set_pc_setting_data', pcSettingNow);
   return;
 }
 

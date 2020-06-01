@@ -4,6 +4,8 @@ const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
 const path = require('path');
 
+const CONSTANT = require('./constant');
+
 class scaleFlag {
   constructor() {
     // 상태 표시
@@ -33,24 +35,6 @@ class scaleFlag {
     // 스팬 적용
     this.do_span = false
 
-    // 통신 모드 파악
-    this.is_stream_mode = true
-
-    // 통신 설정 모드
-    this.is_serial_mode = false
-
-    // 기본 설정 모드
-    this.is_basic_mode = false
-
-    // 외부 출력 모드
-    this.is_comp_mode = false
-
-    // 교정 모드
-    this.is_cal_mode = false
-
-    // 버전
-    this.is_ver_mode = false
-
     // init F 모드
     this.mode_init_f = false
 
@@ -71,14 +55,14 @@ class scaleFlag {
   }
 }
 
-class pcSettingFlag{
-  constructor() {
-    this.port = 'COM1';
-    this.baudrate = 24;
-    this.databits = 7;
-    this.parity = 'even';
-    this.stopbits = 1;
-    this.terminator = 'CRLF';
+class uartFlag{
+  constructor(port, baudrate, databits, parity, stopbits, terminator) {
+    this.port = port;
+    this.baudrate = baudrate;
+    this.databits = databits;
+    this.parity = parity;
+    this.stopbits = stopbits;
+    this.terminator = terminator;
   }
 }
 
@@ -87,7 +71,8 @@ var win;
 var settingWin;
 var pcSettingWin;
 var scale = new scaleFlag();
-var pcSetting = new pcSettingFlag();
+var pcSetting = new uartFlag('COM1', 24, 7, CONSTANT.PARITY_EVEN, 1, CONSTANT.CRLF);
+var basicSetting = new uartFlag();
 
 var createWindow = function() {
   // 브라우저 창을 생성합니다.
@@ -137,27 +122,48 @@ var openPCSettingWindow = function() {
   pcSettingWin.loadFile('pcsetting.html');
   pcSettingWin.webContents.openDevTools();
 
+  // PC설정 화면 로드 완료되면 포트 목록 호출 및 PC설정 데이터 전송
   pcSettingWin.webContents.on('did-finish-load', () => {
     // 포트목록 불러오기
     SerialPort.list().then(
       ports => {
         pcSettingWin.webContents.send('port_list', ports);
-        pcSettingWin.webContents.send('pc_setting_data', pcSetting)
+        pcSettingWin.webContents.send('get_pc_setting_data', pcSetting)
       }
     );
   })
 }
 
+var setStreamMode = function() {
+  console.log('set stream mode');
+  const command = 'F206,1' + '\r\n';
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message);
+      return;
+    }
+  });
+}
+
+var setCommandMode = function() {
+  console.log('set command mode');
+  const command = 'F206,2' + '\r\n';
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message);
+      return;
+    }
+    openSettingWindow();
+  });
+}
+
 //TODO scale의 변수명 수정 및 scale 클래스 추가, makeFormat 함수 만들기
 const readHeader = function(rx) {
-  if(rx.length < 16) {
-    scale.block = true;
-    return;
-  }
-
+  console.log('1231456666666');
   const header1bit = rx.substr(0, 1);
   const header2bit = rx.substr(0, 2);
   const header3bit = rx.substr(0, 3);
+  const header4bit = rx.substr(0, 4);
   const header5bit = rx.substr(0, 5);
 
   if(scale.cf &&
@@ -175,8 +181,68 @@ const readHeader = function(rx) {
     (header5bit == 'STOOK') ||
     (header5bit == 'SETOK')) {
       scale.f = false;
+      console.log('scalef');
+
+      if(header1bit == 'F') {
+        console.log(header4bit);
+        console.log(rx);
+
+        const data = Number(rx.substr(5,7));
+        console.log(data);
+        if(header4bit == 'F001') {
+
+        }
+
+        if(header4bit == 'F002') {
+
+        }
+
+        if(header4bit == 'F003') {
+
+        }
+
+        if(header4bit == 'F101') {
+
+        }
+
+        if(header4bit == 'F102') {
+
+        }
+
+        if(header4bit == 'F103') {
+
+        }
+
+        if(header4bit == 'F104') {
+
+        }
+
+        if(header4bit == 'F201') {
+          basicSetting.baudrate = data;
+        }
+
+        if(header4bit == 'F202') {
+          basicSetting.databits = data;
+        }
+
+        if(header4bit == 'F203') {
+          basicSetting.parity = data;
+        }
+
+        if(header4bit == 'F204') {
+          basicSetting.stopbits = data;
+        }
+
+        if(header4bit == 'F205') {
+          basicSetting.terminator = data;
+          settingWin.webContents.send('get_basic_setting_data', basicSetting);
+        }
+      }
     }
   else {
+    if(rx.length < 16) {
+      return;
+    }
     const state = rx.substr(3, 2);
 
     if (header2bit == 'ST') {
@@ -280,12 +346,150 @@ ipcMain.on('open_pc_setting_window', (event, arg) =>{
 
 ipcMain.on('open_setting_window', (event, arg) =>{
   console.log('open_setting_window');
-  openSettingWindow();
+  setCommandMode();
 })
 
-ipcMain.on('pc_setting_data', (event, data) => {
-  console.log('pc_setting_data');
+ipcMain.on('set_pc_setting_data', (event, data) => {
+  console.log('set_pc_setting_data');
   pcSetting = data;
+})
+
+ipcMain.on('set_basic_setting_data', (event, data) => {
+  console.log('set_basic_setting_data');
+
+})
+
+var setBasicSetting = function() {
+  console.log('set_device_setting');
+
+  console.log('set_device_baudrate');
+  var command = 'F201,' + basicSetting.baudrate.toString() + '\r\n';
+  scale.f = true;
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      basicSetting = new uartFlag();
+      settingWin.webContents.send('set_basic_setting_data', 'fail');
+      return;
+    }
+    console.log('set_device_databits');
+    command = 'F202'+ basicSetting.databits.toString() + '\r\n';
+    scale.f = true;
+    sp.write(command, function(err){
+      if(err) {
+        console.log(err.message)
+        basicSetting = new uartFlag();
+        settingWin.webContents.send('set_basic_setting_data', 'fail');
+        return;
+      }
+      console.log('set_device_parity');
+      command = 'F203' + basicSetting.parity.toString() + '\r\n';
+      scale.f = true;
+      sp.write(command, function(err){
+        if(err) {
+          console.log(err.message)
+          basicSetting = new uartFlag();
+          settingWin.webContents.send('set_basic_setting_data', 'fail');
+          return;
+        }
+        console.log('set_device_stopbits');
+        command = 'F204' + basicSetting.stopbits.toString() + '\r\n';
+        scale.f = true;
+        sp.write(command, function(err){
+          if(err) {
+            console.log(err.message)
+            basicSetting = new uartFlag();
+            settingWin.webContents.send('set_basic_setting_data', 'fail');
+            return;
+          }
+          console.log('set_device_terminator');
+          command = 'F205' + basicSetting.terminator.toString() + '\r\n';
+          scale.f = true;
+          sp.write(command, function(err){
+            if(err) {
+              console.log(err.message)
+              basicSetting = new uartFlag();
+              settingWin.webContents.send('set_basic_setting_data', 'fail');
+              return;
+            }
+            settingWin.webContents.send('set_basic_setting_data', 'ok');
+          })
+        })
+      })
+    })
+  })
+}
+
+var getBasicSetting = function() {
+  console.log('get_device_setting');
+
+
+  console.log('get_device_baudrate');
+  var command = '?F201' + '\r\n';
+  scale.f = true;
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      basicSetting = new uartFlag();
+      return;
+    }
+    console.log('www');
+    var stg = sp.read();
+    console.log(stg);
+    // console.log('get_device_databits');
+    // command = '?F202' + '\r\n';
+    // scale.f = true;
+    // sp.write(command, function(err){
+    //   if(err) {
+    //     console.log(err.message)
+    //     basicSetting = new uartFlag();
+    //     return;
+    //   }
+    //   console.log('get_device_parity');
+    //   command = '?F203' + '\r\n';
+    //   scale.f = true;
+    //   sp.write(command, function(err){
+    //     if(err) {
+    //       console.log(err.message)
+    //       basicSetting = new uartFlag();
+    //       return;
+    //     }
+    //     console.log('get_device_stopbits');
+    //     command = '?F204' + '\r\n';
+    //     scale.f = true;
+    //     sp.write(command, function(err){
+    //       if(err) {
+    //         console.log(err.message)
+    //         basicSetting = new uartFlag();
+    //         return;
+    //       }
+    //       console.log('get_device_terminator');
+    //       command = '?F205' + '\r\n';
+    //       scale.f = true;
+    //       sp.write(command, function(err){
+    //         console.log(basicSetting);
+    //         if(err) {
+    //           console.log(err.message)
+    //           basicSetting = new uartFlag();
+    //           return;
+    //         }
+    //       })
+    //     })
+    //   })
+    // })
+  })
+
+}
+
+ipcMain.on('set_stream_mode', (event, data) => {
+  if(sp == undefined) {
+    return;
+  }
+  setStreamMode();
+})
+
+ipcMain.on('get_basic_setting_data', (event, data) =>{
+  getBasicSetting();
 })
 
 ipcMain.on('set_clear_tare', (event, arg) =>{
@@ -352,15 +556,28 @@ ipcMain.on('on_off', (event, arg) =>{
   // 최초 실행시
   if(sp == undefined) {
     try {
+
+      console.log('first execute');
+      console.log(pcSetting);
       sp = new SerialPort(pcSetting.port,{
         baudRate: pcSetting.baudrate * 100,
-        parity: pcSetting.parity,
-        dataBits: parseInt(pcSetting.databits),
-        stopBits: parseInt(pcSetting.stopbits)
+        dataBits: Number(pcSetting.databits),
+        stopBits: Number(pcSetting.stopbits)
       });
 
-      const lineStream = sp.pipe(new Readline({ delimiter: pcSetting.terminator == 'CRLF' ? '\r\n' : '\r' }));
+      if(pcSetting.parity == CONSTANT.NONE) {
+        sp.parity = 'none';
+      }
+      else if(pcSetting.parity == CONSTANT.ODD) {
+        sp.parity = 'odd';
+      }
+      else if(pcSetting.parity == CONSTANT.EVEN) {
+        sp.parity = 'even';
+      }
+
+      const lineStream = sp.pipe(new Readline({ delimiter: pcSetting.terminator == CONSTANT.CRLF ? '\r\n' : '\r' }));
       lineStream.on('data', function(rx) {
+        // console.log('dfdfdffdfdfefef');
         readHeader(rx);
         win.webContents.send('rx_data', scale)
       })
@@ -385,7 +602,7 @@ ipcMain.on('on_off', (event, arg) =>{
 
       // 스트림 모드 날리기
 
-      const lineStream = sp.pipe(new Readline({ delimiter: pcSetting.terminator == 'CRLF' ? '\r\n' : '\r' }));
+      const lineStream = sp.pipe(new Readline({ delimiter: pcSetting.terminator == CONSTANT.CRLF ? '\r\n' : '\r' }));
       lineStream.on('data', function(rx) {
         readHeader(rx);
         win.webContents.send('rx_data', scale)
