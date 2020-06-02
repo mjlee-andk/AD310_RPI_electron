@@ -104,6 +104,7 @@ ipcRenderer.on('on_off', (event, message) => {
     setHoldButton.disabled = true;
     printButton.disabled = true;
     openPCSettingWindowButton.disabled = false;
+    openSettingWindowButton.disabled = true;
   }
   // 프로그램 ON 상태
   else {
@@ -113,6 +114,7 @@ ipcRenderer.on('on_off', (event, message) => {
     setHoldButton.disabled = false;
     printButton.disabled = false;
     openPCSettingWindowButton.disabled = true;
+    openSettingWindowButton.disabled = false;
   }
 });
 

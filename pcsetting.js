@@ -43,6 +43,7 @@ const terminatorRadios2 = document.getElementById("terminatorRadios2");
 // PC설정 화면 시작시 데이터 받아오기
 ipcRenderer.on('get_pc_setting_data', (event, data) => {
   console.log('get_pc_setting_data');
+  console.log(data);
   portSelect.value = data.port;
   baudrateSelect.value = data.baudrate;
   if(data.databits == 7) {

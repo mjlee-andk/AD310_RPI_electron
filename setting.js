@@ -21,6 +21,7 @@ const closeSettingWindowButton = document.getElementById("closeSettingWindow");
 closeSettingWindowButton.addEventListener('click', function(){
   var window = remote.getCurrentWindow();
   window.close();
+  ipcRenderer.send('set_stream_mode', 'ok');
 })
 
 const baudrateSelect = document.getElementById("baudrateSelect");
@@ -37,6 +38,7 @@ const terminatorRadios2 = document.getElementById("terminatorRadios2");
 ipcRenderer.on('get_basic_setting_data', (event, data) => {
   console.log('get_basic_setting_data');
 
+  baudrateSelect.value = data.baudrate;
   if(data.databits == 7) {
     dataBitsRadios1.checked = true;
   }
@@ -68,17 +70,9 @@ ipcRenderer.on('get_basic_setting_data', (event, data) => {
 
 ipcRenderer.on('set_basic_setting_data', (event, arg) => {
   var window = remote.getCurrentWindow();
-  if(arg == 'fail') {
-    console.log('set basic setting failed');
-    window.close();
-    return;
-  }
-
-  if(arg == 'ok') {
-    console.log('set basic setting success');
-    window.close();
-    return;
-  }
+  console.log('set basic setting ' + arg );
+  window.close();
+  return;
 })
 // 기본 설정에서 선택된 값들 가져오기
 var tmpfunc = function() {
@@ -121,4 +115,4 @@ var tmpfunc = function() {
   return;
 }
 
-ipcRenderer.send('get_basic_setting_data', 'ok');
+// ipcRenderer.send('get_basic_setting_data', 'ok');
