@@ -3,8 +3,8 @@ const remote = require('electron').remote;
 
 // 메인 화면 상단 버튼
 const closeMainWindowButton = document.getElementById("closeMainWindow");
-const openPCSettingWindowButton = document.getElementById("openPCSettingWindow");
-const openSettingWindowButton = document.getElementById("openSettingWindow");
+const openPCConfigWindowButton = document.getElementById("openPCConfigWindow");
+const openConfigWindowButton = document.getElementById("openConfigWindow");
 
 closeMainWindowButton.addEventListener('click', function(){
   ipcRenderer.send('set_stream_mode', 'ok');
@@ -12,14 +12,14 @@ closeMainWindowButton.addEventListener('click', function(){
   window.close();
 })
 
-openPCSettingWindowButton.addEventListener('click', function(){
-  console.log('openPCSettingWindowButton');
-  ipcRenderer.send('open_pc_setting_window', 'ok');
+openPCConfigWindowButton.addEventListener('click', function(){
+  console.log('openPCConfigWindowButton');
+  ipcRenderer.send('open_pc_config_window', 'ok');
 })
 
-openSettingWindowButton.addEventListener('click', function(){
-  console.log('openSettingWindowButton');
-  ipcRenderer.send('open_setting_window', 'ok');
+openConfigWindowButton.addEventListener('click', function(){
+  console.log('openConfigWindowButton');
+  ipcRenderer.send('open_config_window', 'ok');
 })
 
 
@@ -103,8 +103,8 @@ ipcRenderer.on('on_off', (event, message) => {
     setGrossNetButton.disabled = true;
     setHoldButton.disabled = true;
     printButton.disabled = true;
-    openPCSettingWindowButton.disabled = false;
-    openSettingWindowButton.disabled = true;
+    openPCConfigWindowButton.disabled = false;
+    openConfigWindowButton.disabled = true;
   }
   // 프로그램 ON 상태
   else {
@@ -113,8 +113,8 @@ ipcRenderer.on('on_off', (event, message) => {
     setGrossNetButton.disabled = false;
     setHoldButton.disabled = false;
     printButton.disabled = false;
-    openPCSettingWindowButton.disabled = true;
-    openSettingWindowButton.disabled = false;
+    openPCConfigWindowButton.disabled = true;
+    openConfigWindowButton.disabled = false;
   }
 });
 

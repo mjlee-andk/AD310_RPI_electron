@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AD310-RPI 설정</title>
+    <title>AD310-RPI PC설정</title>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -45,7 +45,7 @@
 
     <script>
       window.onload = function() {
-        require('./setting');
+        require('./pcconfig');
       }
     </script>
     <style>
@@ -57,12 +57,13 @@
   <body>
     <div class="p-3">
       <div class="position-relative mt-2 mb-2">
-        <span class="display-2">설정</span>
+        <span class="display-2">PC 설정</span>
         <div class="d-inline" style="float:right;">
-          <a target="_blank" class="btn btn-primary mr-3" style="float:right;" id="closeSettingWindow">Back</a>
-          <a target="_blank" class="btn btn-primary mr-3" style="float:right;" id="settingOk">Confirm</a>
+          <a target="_blank" class="btn btn-primary mr-3" style="float:right;" id="closePCConfigWindow">뒤로</a>
+          <a target="_blank" class="btn btn-primary mr-3" style="float:right;" id="pcConfigOk">변경</a>
         </div>
       </div>
+
       <div class="row mt-4">
           <div class="col">
               <div class="card bg-primary shadow-soft border-light">
@@ -71,6 +72,7 @@
                       </div>
                       <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
                           <div class="bg-primary mt-2">
+                              <h1 class="display-4 mb-3">Port</h1>
                               <h1 class="display-4 mb-3">Baudrate</h1>
                               <h1 class="display-4">Databits</h1>
                               <h1 class="display-4">Parity</h1>
@@ -80,6 +82,10 @@
                       </div>
                       <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
                         <div class="bg-primary">
+                          <div class="bg-primary w-50">
+                            <select id="portSelect" class="custom-select mr-sm-2">
+                            </select>
+                          </div>
                           <div class="bg-primary mt-1 w-50">
                             <select id="baudrateSelect" class="custom-select mr-sm-2">
                                 <option value="24">2400</option>
@@ -102,6 +108,7 @@
                                     8bits
                                   </label>
                                 </div>
+                              <!-- End of Radio -->
                             </fieldset>
                           </div>
                           <div class="bg-primary mt-3">
@@ -122,6 +129,7 @@
                                     Even
                                   </label>
                                 </div>
+                              <!-- End of Radio -->
                             </fieldset>
                           </div>
                           <div class="bg-primary mt-3">
@@ -137,6 +145,7 @@
                                     2bits
                                   </label>
                                 </div>
+                              <!-- End of Radio -->
                             </fieldset>
                           </div>
                           <div class="bg-primary mt-3">
@@ -152,6 +161,7 @@
                                     CR
                                   </label>
                                 </div>
+                              <!-- End of Radio -->
                             </fieldset>
                           </div>
                         </div>
@@ -160,44 +170,6 @@
               </div>
           </div>
         </div>
-      <!-- <div class="row">
-        <div class="col-12">
-          <div class="nav-wrapper position-relative mb-4">
-              <ul class="nav nav-pills flex-column flex-sm-row" id="tabs-text" role="tablist">
-                  <li class="nav-item mr-sm-3 mr-md-0">
-                      <a class="nav-link mb-sm-3 mb-md-0 active" id="tabs-text-1-tab" data-toggle="tab" href="#tabs-text-1" role="tab" aria-controls="tabs-text-1" aria-selected="true">Account</a>
-                  </li>
-                  <li class="nav-item mr-sm-3 mr-md-0">
-                      <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-2-tab" data-toggle="tab" href="#tabs-text-2" role="tab" aria-controls="tabs-text-2" aria-selected="false">Profile</a>
-                  </li>
-                  <li class="nav-item mr-sm-3 mr-md-0">
-                      <a class="nav-link mb-sm-3 mb-md-0" id="tabs-text-3-tab" data-toggle="tab" href="#tabs-text-3" role="tab" aria-controls="tabs-text-3" aria-selected="false">Messages</a>
-                  </li>
-              </ul>
-          </div>
-          <div class="card shadow-inset bg-primary border-light p-4 rounded">
-              <div class="card-body p-0">
-                  <div class="tab-content" id="tabcontent1">
-                      <div class="tab-pane fade active show" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
-                          <p>Exercitation photo booth stumptown tote bag Banksy, elit small batch freegan sed. Craft beer elit seitan exercitation, photo booth et 8-bit kale chips proident chillwave deep v laborum. Aliquip veniam delectus,
-                              Marfa eiusmod Pinterest in do umami readymade swag.</p>
-                          <p>Day handsome addition horrible sensible goodness two contempt. Evening for married his account removal. Estimable me disposing of be moonlight cordially curiosity.</p>
-                      </div>
-                      <div class="tab-pane fade" id="tabs-text-2" role="tabpanel" aria-labelledby="tabs-text-2-tab">
-                          <p>Photo booth stumptown tote bag Banksy, elit small batch freegan sed. Craft beer elit seitan exercitation, photo booth et 8-bit kale chips proident chillwave deep v laborum. Aliquip veniam delectus, Marfa eiusmod
-                              Pinterest in do umami readymade swag.</p>
-                          <p>Day handsome addition horrible sensible goodness two contempt. Evening for married his account removal. Estimable me disposing of be moonlight cordially curiosity.</p>
-                      </div>
-                      <div class="tab-pane fade" id="tabs-text-3" role="tabpanel" aria-labelledby="tabs-text-3-tab">
-                          <p>Exercitation photo booth stumptown tote bag Banksy, elit small batch freegan sed. Craft beer elit seitan exercitation, photo booth et 8-bit kale chips proident chillwave deep v laborum. Aliquip veniam delectus,
-                              Marfa eiusmod Pinterest in do umami readymade swag.</p>
-                          <p>Day handsome addition horrible sensible goodness two contempt. Evening for married his account removal. Estimable me disposing of be moonlight cordially curiosity.</p>
-                      </div>
-                  </div>
-              </div>
-          </div>
-        </div>
-      </div> -->
     </div>
   </body>
 </html>

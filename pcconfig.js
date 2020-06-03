@@ -14,16 +14,16 @@ class uartFlag{
   }
 }
 
-const pcSettingOkButton = document.getElementById("pcSettingOk");
-pcSettingOkButton.addEventListener('click', function(){
+const pcConfigOkButton = document.getElementById("pcConfigOk");
+pcConfigOkButton.addEventListener('click', function(){
   tmpfunc();
 
   var window = remote.getCurrentWindow();
   window.close();
 })
 
-const closePCSettingWindowButton = document.getElementById("closePCSettingWindow");
-closePCSettingWindowButton.addEventListener('click', function(){
+const closePCConfigWindowButton = document.getElementById("closePCConfigWindow");
+closePCConfigWindowButton.addEventListener('click', function(){
   var window = remote.getCurrentWindow();
   window.close();
 })
@@ -41,8 +41,8 @@ const terminatorRadios1 = document.getElementById("terminatorRadios1");
 const terminatorRadios2 = document.getElementById("terminatorRadios2");
 
 // PC설정 화면 시작시 데이터 받아오기
-ipcRenderer.on('get_pc_setting_data', (event, data) => {
-  console.log('get_pc_setting_data');
+ipcRenderer.on('get_pc_config_data', (event, data) => {
+  console.log('get_pc_config_data');
   console.log(data);
   portSelect.value = data.port;
   baudrateSelect.value = data.baudrate;
@@ -87,45 +87,45 @@ ipcRenderer.on('port_list', (event, data) => {
   })
 });
 
-// pc setting에서 설정한 값들 보내기
+// pc config에서 설정한 값들 보내기
 var tmpfunc = function() {
-  var pcSettingNow = new uartFlag('COM1', 24, 7, CONSTANT.PARITY_EVEN, 1, CONSTANT.CRLF);
+  var pcConfigNow = new uartFlag('COM1', 24, 7, CONSTANT.PARITY_EVEN, 1, CONSTANT.CRLF);
 
-  pcSettingNow.port = portSelect.options[portSelect.selectedIndex].value;
-  pcSettingNow.baudrate = baudrateSelect.options[baudrateSelect.selectedIndex].value;
+  pcConfigNow.port = portSelect.options[portSelect.selectedIndex].value;
+  pcConfigNow.baudrate = baudrateSelect.options[baudrateSelect.selectedIndex].value;
 
   if(dataBitsRadios1.checked) {
-    pcSettingNow.databits = dataBitsRadios1.value;
+    pcConfigNow.databits = dataBitsRadios1.value;
   }
   else if(dataBitsRadios2.checked) {
-    pcSettingNow.databits = dataBitsRadios2.value;
+    pcConfigNow.databits = dataBitsRadios2.value;
   }
 
   if(parityRadios1.checked) {
-    pcSettingNow.parity = parityRadios1.value;
+    pcConfigNow.parity = parityRadios1.value;
   }
   else if(parityRadios2.checked) {
-    pcSettingNow.parity = parityRadios2.value;
+    pcConfigNow.parity = parityRadios2.value;
   }
   else if(parityRadios3.checked) {
-    pcSettingNow.parity = parityRadios3.value;
+    pcConfigNow.parity = parityRadios3.value;
   }
 
   if(stopbitsRadios1.checked) {
-    pcSettingNow.stopbits = stopbitsRadios1.value;
+    pcConfigNow.stopbits = stopbitsRadios1.value;
   }
   else if(stopbitsRadios2.checked) {
-    pcSettingNow.stopbits = stopbitsRadios2.value;
+    pcConfigNow.stopbits = stopbitsRadios2.value;
   }
 
   if(terminatorRadios1.checked) {
-    pcSettingNow.terminator = terminatorRadios1.value;
+    pcConfigNow.terminator = terminatorRadios1.value;
   }
   else if(terminatorRadios2.checked) {
-    pcSettingNow.terminator = terminatorRadios2.value;
+    pcConfigNow.terminator = terminatorRadios2.value;
   }
 
-  ipcRenderer.send('set_pc_setting_data', pcSettingNow);
+  ipcRenderer.send('set_pc_config_data', pcConfigNow);
   return;
 }
 

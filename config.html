@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AD310-RPI 설정</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!--  Social tags -->
+    <meta name="keywords" content="neumorphism, neumorphism ui, neomorphism, neomorphism ui, neomorphism css, neumorphism css, neumorph, neumorphic, design system, login, form, table, tables, card, cards, navbar, modal, icons, icons, map, chat, carousel, menu, datepicker, gallery, slider, date, social, dropdown, search, tab, nav, footer, date picker, forms, tabs, time, button, select, input, timeline, cart, about us, account, log in, blog, profile, portfolio, landing page, ecommerce, shop, landing, register, app, contact, one page, sign up, signup, store, bootstrap 4, bootstrap4, dashboard, bootstrap 4 dashboard, bootstrap 4 design, bootstrap 4 system, bootstrap 4, bootstrap 4 uit kit, bootstrap 4 kit, themesberg, html kit, html css template, web template, bootstrap, bootstrap 4, css3 template, frontend, responsive bootstrap template, bootstrap ui kit, responsive ui kit">
+    <meta name="description" content="Start developing neumorphic web applications and pages using Neumorphism UI. It features over 100 individual components and 5 example pages.">
+
+    <!-- Schema.org markup for Google+ -->
+    <meta itemprop="name" content="Neumorphism UI by Themesberg">
+    <meta itemprop="description" content="Start developing neumorphic web applications and pages using Neumorphism UI. It features over 100 individual components and 5 example pages.">
+    <meta itemprop="image" content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/neumorphism-ui/neumorphism-thumbnail.jpg">
+
+    <!-- Twitter Card data -->
+    <meta name="twitter:card" content="product">
+    <meta name="twitter:site" content="@themesberg">
+    <meta name="twitter:title" content="Neumorphism UI by Themesberg">
+    <meta name="twitter:description" content="Start developing neumorphic web applications and pages using Neumorphism UI. It features over 100 individual components and 5 example pages.">
+    <meta name="twitter:creator" content="@themesberg">
+    <meta name="twitter:image" content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/neumorphism-ui/neumorphism-thumbnail.jpg">
+
+    <!-- Open Graph data -->
+    <meta property="fb:app_id" content="214738555737136">
+    <meta property="og:title" content="Neumorphism UI by Themesberg" />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://demo.themesberg.com/neumorphism-ui/" />
+    <meta property="og:image" content="https://themesberg.s3.us-east-2.amazonaws.com/public/products/neumorphism-ui/neumorphism-thumbnail.jpg"/>
+    <meta property="og:description" content="Start developing neumorphic web applications and pages using Neumorphism UI. It features over 100 individual components and 5 example pages." />
+    <meta property="og:site_name" content="Themesberg" />
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="120x120" href="./assets/img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="./assets/img/favicon/site.webmanifest">
+    <link rel="mask-icon" href="./assets/img/favicon/safari-pinned-tab.svg" color="#ffffff">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+
+    <link type="text/css" href="./css/neumorphism.css" rel="stylesheet">
+    <script src="./vendor/nouislider/distribute/nouislider.min.js"></script>
+
+    <script>
+      window.onload = function() {
+        require('./config');
+      }
+    </script>
+    <style>
+      .form-check-label {
+        width: 25% !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="p-3">
+      <!--헤더-->
+      <div class="position-relative mt-2 mb-2">
+        <span class="display-2">설정</span>
+        <div class="d-inline" style="float:right;">
+          <button target="_blank" class="btn btn-primary mr-3" style="float:right;" id="closeConfigWindow">뒤로</button>
+          <button target="_blank" class="btn btn-primary mr-3" style="float:right;" id="configOk">변경</button>
+        </div>
+      </div>
+
+
+      <!--내용-->
+      <div class="row mt-4">
+        <div class="col">
+          <div class="card bg-primary shadow-soft border-light">
+            <!--통신설정-->
+            <div id="serialDiv" class="row p-3">
+              <div class="offset-1">
+              </div>
+              <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
+                <div class="bg-primary mt-2">
+                    <h1 class="display-4 mb-3">Baudrate</h1>
+                    <h1 class="display-4">Databits</h1>
+                    <h1 class="display-4">Parity</h1>
+                    <h1 class="display-4">Stopbits</h1>
+                    <h1 class="display-4">Terminator</h1>
+                </div>
+              </div>
+              <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
+                <div class="bg-primary">
+                  <div class="bg-primary mt-1 w-50">
+                    <select id="baudrateSelect" class="custom-select mr-sm-2">
+                        <option value="24">2400</option>
+                        <option value="48">4800</option>
+                        <option value="96">9600</option>
+                        <option value="192">19200</option>
+                        <option value="384">38400</option>
+                    </select>
+                  </div>
+                  <div class="bg-primary mt-3">
+                    <fieldset>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="dataBitsRadios" id="dataBitsRadios1" value="7" checked="">
+                          <label class="form-check-label" for="dataBitsRadios1">
+                            7bits
+                          </label>
+
+                          <input class="form-check-input" type="radio" name="dataBitsRadios" id="dataBitsRadios2" value="8">
+                          <label class="form-check-label" for="dataBitsRadios2">
+                            8bits
+                          </label>
+                        </div>
+                    </fieldset>
+                  </div>
+                  <div class="bg-primary mt-3">
+                    <fieldset>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios1" value="0" checked="">
+                          <label class="form-check-label" for="parityRadios1">
+                            None
+                          </label>
+
+                          <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios2" value="1">
+                          <label class="form-check-label" for="parityRadios2">
+                            Odd
+                          </label>
+
+                          <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios3" value="2">
+                          <label class="form-check-label" for="parityRadios3">
+                            Even
+                          </label>
+                        </div>
+                    </fieldset>
+                  </div>
+                  <div class="bg-primary mt-3">
+                    <fieldset>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="stopbitsRadios" id="stopbitsRadios1" value="1" checked="">
+                          <label class="form-check-label" for="stopbitsRadios1">
+                            1bit
+                          </label>
+
+                          <input class="form-check-input" type="radio" name="stopbitsRadios" id="stopbitsRadios2" value="2">
+                          <label class="form-check-label" for="stopbitsRadios2">
+                            2bits
+                          </label>
+                        </div>
+                    </fieldset>
+                  </div>
+                  <div class="bg-primary mt-3">
+                    <fieldset>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="terminatorRadios" id="terminatorRadios1" value="1" checked="">
+                          <label class="form-check-label" for="terminatorRadios1">
+                            CRLF
+                          </label>
+
+                          <input class="form-check-input" type="radio" name="terminatorRadios" id="terminatorRadios2" value="2">
+                          <label class="form-check-label" for="terminatorRadios2">
+                            CR
+                          </label>
+                        </div>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--기본설정 좌-->
+            <div id="basicLeftDiv" class="row p-3" style="display:none">
+              <div class="offset-1">
+              </div>
+              <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
+                <div class="bg-primary mt-2">
+                    <h1 class="display-4 mb-3">디지털 필터</h1>
+                    <h1 class="display-4 mb-3">홀드 모드</h1>
+                    <h1 class="display-4">평균화 시간</h1>
+                </div>
+              </div>
+              <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
+                <div class="bg-primary">
+                  <div class="bg-primary mt-1 w-50">
+                    <select id="digitalFilterSelect" class="custom-select mr-sm-2">
+                        <option value="0">없음</option>
+                        <option value="1">2.5Hz</option>
+                        <option value="2">2.0Hz</option>
+                        <option value="3">1.5Hz</option>
+                        <option value="4">1.0Hz</option>
+                        <option value="5">0.7Hz</option>
+                        <option value="6">0.5Hz</option>
+                        <option value="7">0.35Hz</option>
+                        <option value="8">0.25Hz</option>
+                        <option value="9">0.20Hz</option>
+                        <option value="10">0.15Hz</option>
+                        <option value="11">0.10Hz</option>
+                    </select>
+                  </div>
+                  <div class="bg-primary mt-1 w-50">
+                    <select id="holdModeSelect" class="custom-select mr-sm-2">
+                        <option value="0">홀드하지 않음</option>
+                        <option value="1">샘플 홀드</option>
+                        <option value="2">피크 홀드</option>
+                        <option value="3">버튼 홀드</option>
+                        <option value="4">양극성, 피크 홀드</option>
+                    </select>
+                  </div>
+                  <div class="bg-primary mt-3 w-50">
+                    <div id="averageTimeSlider"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--기본설정 우-->
+            <div id="basicRightDiv" class="row p-3" style="display:none">
+              <div class="offset-1">
+              </div>
+              <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
+                <div class="bg-primary mt-2">
+                    <h1 class="display-4">제로 확보 범위</h1>
+                    <h1 class="display-4">영점 트래킹 시간</h1>
+                    <h1 class="display-4">영점 트래킹 폭</h1>
+                    <h1 class="display-4">파워 온 제로</h1>
+                </div>
+              </div>
+              <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
+                <div class="bg-primary">
+                  <div class="bg-primary mt-1 ml-2 pt-1 w-50">
+                    <div id="zeroRangeSlider"></div>
+                  </div>
+                  <div class="bg-primary mt-1 ml-2 pt-1 w-50">
+                    <div id="zeroTrackingTimeSlider"></div>
+                  </div>
+                  <div class="bg-primary mt-1 ml-2 pt-1 w-50">
+                    <div id="zeroTrackingWidthSlider"></div>
+                  </div>
+                  <div class="bg-primary mt-4 pt-1">
+                    <div class="custom-control custom-switch">
+                      <input type="checkbox" class="custom-control-input" id="powerOnZeroToggle">
+                      <label class="custom-control-label" for="powerOnZeroToggle"></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--외부출력-->
+            <div id="externalPrintDiv" class="row p-3" style="display:none">
+              <div class="offset-1">
+              </div>
+              <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
+                <div class="bg-primary mt-2">
+                    <!-- <h1 class="display-4 mb-3">Baudrate</h1> -->
+                    <h1 class="display-4">출력조건</h1>
+                    <h1 class="display-4">설정값</h1>
+                    <h1 class="display-4">비교모드</h1>
+                    <h1 class="display-4">영점부근</h1>
+                </div>
+              </div>
+              <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
+                <div class="bg-primary">
+                  <!-- <div class="bg-primary mt-1 w-50">
+                    <select id="baudrateSelect" class="custom-select mr-sm-2">
+                        <option value="24">2400</option>
+                        <option value="48">4800</option>
+                        <option value="96">9600</option>
+                        <option value="192">19200</option>
+                        <option value="384">38400</option>
+                    </select>
+                  </div> -->
+                  <div class="bg-primary mt-3">
+                    <fieldset>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="printConditionRadios" id="printConditionRadios1" value="0" checked="">
+                          <label class="form-check-label" for="printConditionRadios1">
+                            설정값보다 높을때
+                          </label>
+
+                          <input class="form-check-input" type="radio" name="printConditionRadios" id="printConditionRadios2" value="1">
+                          <label class="form-check-label" for="printConditionRadios2">
+                            설정값보다 낮을때
+                          </label>
+                        </div>
+                    </fieldset>
+                  </div>
+                  <div class="bg-primary mt-3">
+
+                  </div>
+                  <div class="bg-primary mt-3">
+                    <fieldset>
+                        <div class="form-check">
+                          <input class="form-check-input" type="radio" name="comparatorModeRadios" id="comparatorModeRadios1" value="0" checked="">
+                          <label class="form-check-label" for="comparatorModeRadios1">
+                            비교하지않음
+                          </label>
+
+                          <input class="form-check-input" type="radio" name="comparatorModeRadios" id="comparatorModeRadios2" value="1">
+                          <label class="form-check-label" for="comparatorModeRadios2">
+                            영점 부근 이외 비교
+                          </label>
+
+                          <input class="form-check-input" type="radio" name="comparatorModeRadios" id="comparatorModeRadios3" value="2">
+                          <label class="form-check-label" for="comparatorModeRadios3">
+                            항상 비교
+                          </label>
+                        </div>
+                    </fieldset>
+                  </div>
+                  <div class="bg-primary mt-3">
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!--교정-->
+            <div id="calibrationDiv" class="row p-3" style="display:none">
+            </div>
+
+            <!--초기화-->
+            <div id="resetDiv" class="row p-3" style="display:none">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--하단 종류 탭-->
+      <div class="position-relative mt-2 mb-2">
+        <div class="d-inline" style="float:right;">
+          <button class="btn btn-primary mr-3" style="float:right;" id="resetButton">초기화</button>
+          <button class="btn btn-primary mr-3" style="float:right;" id="calibrationConfigButton">교정</button>
+          <button class="btn btn-primary mr-3" style="float:right;" id="externalPrintConfigButton">외부출력</button>
+          <button class="btn btn-primary mr-3" style="float:right;" id="basicRightConfigButton">기본(우)</button>
+          <button class="btn btn-primary mr-3" style="float:right;" id="basicLeftConfigButton">기본(좌)</button>
+          <button class="btn btn-primary mr-3" style="float:right;" id="serialConfigButton">통신</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
