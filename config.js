@@ -1,5 +1,9 @@
 const { BrowserWindow, ipcRenderer } = require('electron')
 const remote = require('electron').remote;
+// const jQuery = $ = require('jquery');
+// require('electron-virtual-keyboard/client')(window, jQuery);
+
+const CONSTANT = require('./constant');
 
 class uartFlag{
   constructor(port, baudrate, databits, parity, stopbits, terminator) {
@@ -17,6 +21,9 @@ class uartFlag{
 //
 const configOkButton = document.getElementById("configOk");
 configOkButton.addEventListener('click', function(){
+  if(serialDiv.style.display == 'flex') {
+    setSerialConfigData();
+  }
   if(basicLeftDiv.style.display == 'flex') {
     setBasicLeftConfigData();
   }
@@ -24,57 +31,24 @@ configOkButton.addEventListener('click', function(){
     setBasicRightConfigData();
   }
 
+  if(calibrationDiv.style.display == 'flex') {
+    setCalibrationConfigData();
+  }
+
+
   // tmpfunc();
 })
 
 const closeConfigWindowButton = document.getElementById("closeConfigWindow");
 closeConfigWindowButton.addEventListener('click', function(){
   console.log('closeConfigWindowButton');
+
   ipcRenderer.send('set_stream_mode', 'ok');
   var window = remote.getCurrentWindow();
   window.close();
-})
+});
 
-// 기본 설정에서 선택된 값들 가져오기
-var tmpfunc = function() {
-  var serialConfigNow = new uartFlag();
 
-  serialConfigNow.baudrate = baudrateSelect.options[baudrateSelect.selectedIndex].value;
-
-  if(dataBitsRadios1.checked) {
-    serialConfigNow.databits = dataBitsRadios1.value;
-  }
-  else if(dataBitsRadios2.checked) {
-    serialConfigNow.databits = dataBitsRadios2.value;
-  }
-
-  if(parityRadios1.checked) {
-    serialConfigNow.parity = parityRadios1.value;
-  }
-  else if(parityRadios2.checked) {
-    serialConfigNow.parity = parityRadios2.value;
-  }
-  else if(parityRadios3.checked) {
-    serialConfigNow.parity = parityRadios3.value;
-  }
-
-  if(stopbitsRadios1.checked) {
-    serialConfigNow.stopbits = stopbitsRadios1.value;
-  }
-  else if(stopbitsRadios2.checked) {
-    serialConfigNow.stopbits = stopbitsRadios2.value;
-  }
-
-  if(terminatorRadios1.checked) {
-    serialConfigNow.terminator = terminatorRadios1.value;
-  }
-  else if(terminatorRadios2.checked) {
-    serialConfigNow.terminator = terminatorRadios2.value;
-  }
-
-  ipcRenderer.send('set_serial_config_data', serialConfigNow);
-  return;
-}
 
 //
 // 내용
@@ -129,11 +103,52 @@ ipcRenderer.on('get_serial_config_data', (event, data) => {
 ipcRenderer.on('set_serial_config_data', (event, arg) => {
   console.log('set serial config ' + arg );
 
-  ipcRenderer.send('set_stream_mode', 'ok');
-  var window = remote.getCurrentWindow();
-  window.close();
+  setTimeout(function(){
+    ipcRenderer.send('set_stream_mode', 'ok');
+    var window = remote.getCurrentWindow();
+    window.close();
+  }, CONSTANT.FIVE_HUNDRED_MS);
+});
+
+const setSerialConfigData = function() {
+  var serialConfigNow = new uartFlag();
+
+  serialConfigNow.baudrate = baudrateSelect.options[baudrateSelect.selectedIndex].value;
+
+  if(dataBitsRadios1.checked) {
+    serialConfigNow.databits = dataBitsRadios1.value;
+  }
+  else if(dataBitsRadios2.checked) {
+    serialConfigNow.databits = dataBitsRadios2.value;
+  }
+
+  if(parityRadios1.checked) {
+    serialConfigNow.parity = parityRadios1.value;
+  }
+  else if(parityRadios2.checked) {
+    serialConfigNow.parity = parityRadios2.value;
+  }
+  else if(parityRadios3.checked) {
+    serialConfigNow.parity = parityRadios3.value;
+  }
+
+  if(stopbitsRadios1.checked) {
+    serialConfigNow.stopbits = stopbitsRadios1.value;
+  }
+  else if(stopbitsRadios2.checked) {
+    serialConfigNow.stopbits = stopbitsRadios2.value;
+  }
+
+  if(terminatorRadios1.checked) {
+    serialConfigNow.terminator = terminatorRadios1.value;
+  }
+  else if(terminatorRadios2.checked) {
+    serialConfigNow.terminator = terminatorRadios2.value;
+  }
+
+  ipcRenderer.send('set_serial_config_data', serialConfigNow);
   return;
-})
+};
 
 // 기본 설정 좌
 const digitalFilterSelect = document.getElementById("digitalFilterSelect");
@@ -162,11 +177,12 @@ ipcRenderer.on('get_basic_left_config_data', (event, data) => {
 ipcRenderer.on('set_basic_left_config_data', (event, arg) => {
   console.log('set basic left config ' + arg );
 
-  ipcRenderer.send('set_stream_mode', 'ok');
-  var window = remote.getCurrentWindow();
-  window.close();
-  return;
-})
+  setTimeout(function(){
+    ipcRenderer.send('set_stream_mode', 'ok');
+    var window = remote.getCurrentWindow();
+    window.close();
+  }, CONSTANT.FIVE_HUNDRED_MS);
+});
 
 const setBasicLeftConfigData = function() {
   console.log('setBasicLeftConfigData');
@@ -238,9 +254,16 @@ ipcRenderer.on('get_basic_right_config_data', (event, data) => {
 ipcRenderer.on('set_basic_right_config_data', (event, arg) => {
   console.log('set basic right ' + arg );
 
-  var window = remote.getCurrentWindow();
-  window.close();
-  return;
+  setTimeout(function(){
+    ipcRenderer.send('set_stream_mode', 'ok');
+    var window = remote.getCurrentWindow();
+    window.close();
+  }, CONSTANT.FIVE_HUNDRED_MS);
+
+  // ipcRenderer.send('set_stream_mode', 'ok');
+  // var window = remote.getCurrentWindow();
+  // window.close();
+  // return;
 })
 
 const setBasicRightConfigData = function() {
@@ -261,9 +284,15 @@ const setBasicRightConfigData = function() {
 // 외부 출력
 const printConditionRadios1 = document.getElementById("printConditionRadios1");
 const printConditionRadios2 = document.getElementById("printConditionRadios2");
+const configValueText = document.getElementById("configValueText");
 const comparatorModeRadios1 = document.getElementById("comparatorModeRadios1");
 const comparatorModeRadios2 = document.getElementById("comparatorModeRadios2");
 const comparatorModeRadios3 = document.getElementById("comparatorModeRadios3");
+const nearZeroText = document.getElementById("nearZeroText");
+
+// var configValueKeyboard = $('#configValueText').keyboard();
+// var nearZeroKeyboard = $('#nearZeroText').keyboard();
+
 
 // TODO 설정값, 영점부근 표시 어떻게 할지 고민
 ipcRenderer.on('get_external_print_config_data', (event, data) => {
@@ -287,6 +316,109 @@ ipcRenderer.on('get_external_print_config_data', (event, data) => {
 });
 
 
+// 교정
+// TODO 최대용량, 스팬값 추가해야함.
+const divSelect = document.getElementById("divSelect");
+const decimalPointSelect = document.getElementById("decimalPointSelect");
+const unitSelect = document.getElementById("unitSelect");
+
+ipcRenderer.on('get_calibration_config_data', (event, data) => {
+  console.log('get_calibration_config_data');
+
+  divSelect.value = data.div;
+  decimalPointSelect.value = data.decimalPoint;
+  unitSelect.value = data.unit;
+});
+
+ipcRenderer.on('set_calibration_config_data', (event, arg) => {
+  console.log('set calibration ' + arg );
+
+  setTimeout(function(){
+    ipcRenderer.send('set_stream_mode', 'ok');
+    var window = remote.getCurrentWindow();
+    window.close();
+  }, CONSTANT.FIVE_HUNDRED_MS);
+
+  // ipcRenderer.send('set_stream_mode', 'ok');
+  // var window = remote.getCurrentWindow();
+  // window.close();
+  // return;
+})
+
+const setCalibrationConfigData = function() {
+  console.log('setCalibrationConfigData');
+
+  var calibrationConfigData = {
+    capa: 10000,
+    div: divSelect.options[divSelect.selectedIndex].value,
+    decimalPoint: decimalPointSelect.options[decimalPointSelect.selectedIndex].value,
+    unit: unitSelect.options[unitSelect.selectedIndex].value,
+  };
+
+  ipcRenderer.send('set_calibration_config_data', calibrationConfigData);
+  return;
+}
+
+
+// 초기화
+const initFunctionFButton = document.getElementById("initFunctionFButton");
+const initConfigButton = document.getElementById("initConfigButton");
+
+initFunctionFButton.addEventListener('click', function(){
+  remote.dialog
+  .showMessageBox(
+    { type: 'info',
+      title: 'F펑션 초기화',
+      message: 'F펑션 초기화를 진행하시겠습니까?',
+      buttons: ['ok', 'cancel']
+    }).then(result => {
+      console.log(result);
+      const response = result.response;
+      if(response == 0) {
+        ipcRenderer.send('init_function_f', 'ok');
+      }
+
+    }).catch(err => {
+      console.log(err);
+    });
+})
+
+initConfigButton.addEventListener('click', function(){
+  remote.dialog
+  .showMessageBox(
+    { type: 'info',
+      title: '설정 초기화',
+      message: '설정 초기화를 진행하시겠습니까?',
+      buttons: ['ok', 'cancel']
+    }).then(result => {
+      console.log(result);
+
+      const response = result.response;
+      if(response == 0) {
+        ipcRenderer.send('init_config', 'ok');
+      }
+    }).catch(err => {
+      console.log(err);
+    });
+})
+
+ipcRenderer.on('init_finish', (event, arg) => {
+  console.log('init_finish');
+
+  remote.dialog
+  .showMessageBox(
+    { type: 'info',
+      title: '초기화 완료',
+      message: '초기화가 완료 되었습니다. 확인을 누르시면 첫 화면으로 돌아갑니다.'
+    }).then(result => {
+      var window = remote.getCurrentWindow();
+      window.close();
+    }).catch(err => {
+      console.log(err);
+    });
+});
+
+
 //
 // 화면 하단
 //
@@ -305,6 +437,8 @@ const externalPrintDiv = document.getElementById("externalPrintDiv");
 const calibrationDiv = document.getElementById("calibrationDiv");
 const resetDiv = document.getElementById("resetDiv");
 
+serialDiv.style.display = "flex";
+
 serialConfigButton.addEventListener('click', function(){
   ipcRenderer.send('get_serial_config_data', 'ok');
 
@@ -315,12 +449,12 @@ serialConfigButton.addEventListener('click', function(){
   calibrationDiv.style.display = "none";
   resetDiv.style.display = "none";
 
-  serialDiv.classList.add("active");
-  basicLeftDiv.classList.remove("active");
-  basicRightDiv.classList.remove("active");
-  externalPrintDiv.classList.remove("active");
-  calibrationDiv.classList.remove("active");
-  resetDiv.classList.remove("active");
+  serialConfigButton.classList.add("active");
+  basicLeftConfigButton.classList.remove("active");
+  basicRightConfigButton.classList.remove("active");
+  externalPrintConfigButton.classList.remove("active");
+  calibrationConfigButton.classList.remove("active");
+  resetButton.classList.remove("active");
 })
 
 basicLeftConfigButton.addEventListener('click', function(){
@@ -333,12 +467,12 @@ basicLeftConfigButton.addEventListener('click', function(){
   calibrationDiv.style.display = "none";
   resetDiv.style.display = "none";
 
-  serialDiv.classList.remove("active");
-  basicLeftDiv.classList.add("active");
-  basicRightDiv.classList.remove("active");
-  externalPrintDiv.classList.remove("active");
-  calibrationDiv.classList.remove("active");
-  resetDiv.classList.remove("active");
+  serialConfigButton.classList.remove("active");
+  basicLeftConfigButton.classList.add("active");
+  basicRightConfigButton.classList.remove("active");
+  externalPrintConfigButton.classList.remove("active");
+  calibrationConfigButton.classList.remove("active");
+  resetButton.classList.remove("active");
 })
 
 basicRightConfigButton.addEventListener('click', function(){
@@ -351,15 +485,17 @@ basicRightConfigButton.addEventListener('click', function(){
   calibrationDiv.style.display = "none";
   resetDiv.style.display = "none";
 
-  serialDiv.classList.remove("active");
-  basicLeftDiv.classList.remove("active");
-  basicRightDiv.classList.add("active");
-  externalPrintDiv.classList.remove("active");
-  calibrationDiv.classList.remove("active");
-  resetDiv.classList.remove("active");
+  serialConfigButton.classList.remove("active");
+  basicLeftConfigButton.classList.remove("active");
+  basicRightConfigButton.classList.add("active");
+  externalPrintConfigButton.classList.remove("active");
+  calibrationConfigButton.classList.remove("active");
+  resetButton.classList.remove("active");
 })
 
 externalPrintConfigButton.addEventListener('click', function(){
+  // remote.dialog.showMessageBox({type: 'info', title: '외부출력', message: '준비중입니다.'});
+  // return;
   serialDiv.style.display = "none";
   basicLeftDiv.style.display = "none";
   basicRightDiv.style.display = "none";
@@ -367,15 +503,19 @@ externalPrintConfigButton.addEventListener('click', function(){
   calibrationDiv.style.display = "none";
   resetDiv.style.display = "none";
 
-  serialDiv.classList.remove("active");
-  basicLeftDiv.classList.remove("active");
-  basicRightDiv.classList.remove("active");
-  externalPrintDiv.classList.add("active");
-  calibrationDiv.classList.remove("active");
-  resetDiv.classList.remove("active");
+  serialConfigButton.classList.remove("active");
+  basicLeftConfigButton.classList.remove("active");
+  basicRightConfigButton.classList.remove("active");
+  externalPrintConfigButton.classList.add("active");
+  calibrationConfigButton.classList.remove("active");
+  resetButton.classList.remove("active");
 })
 
 calibrationConfigButton.addEventListener('click', function(){
+  // remote.dialog.showMessageBox({type: 'info', title: '교정', message: '준비중입니다.'});
+  // return;
+  ipcRenderer.send('get_calibration_config_data', 'ok');
+
   serialDiv.style.display = "none";
   basicLeftDiv.style.display = "none";
   basicRightDiv.style.display = "none";
@@ -383,12 +523,12 @@ calibrationConfigButton.addEventListener('click', function(){
   calibrationDiv.style.display = "flex";
   resetDiv.style.display = "none";
 
-  serialDiv.classList.remove("active");
-  basicLeftDiv.classList.remove("active");
-  basicRightDiv.classList.remove("active");
-  externalPrintDiv.classList.remove("active");
-  calibrationDiv.classList.add("active");
-  resetDiv.classList.remove("active");
+  serialConfigButton.classList.remove("active");
+  basicLeftConfigButton.classList.remove("active");
+  basicRightConfigButton.classList.remove("active");
+  externalPrintConfigButton.classList.remove("active");
+  calibrationConfigButton.classList.add("active");
+  resetButton.classList.remove("active");
 })
 
 resetButton.addEventListener('click', function(){
@@ -399,10 +539,10 @@ resetButton.addEventListener('click', function(){
   calibrationDiv.style.display = "none";
   resetDiv.style.display = "flex";
 
-  serialDiv.classList.remove("active");
-  basicLeftDiv.classList.remove("active");
-  basicRightDiv.classList.remove("active");
-  externalPrintDiv.classList.remove("active");
-  calibrationDiv.classList.remove("active");
-  resetDiv.classList.add("active");
+  serialConfigButton.classList.remove("active");
+  basicLeftConfigButton.classList.remove("active");
+  basicRightConfigButton.classList.remove("active");
+  externalPrintConfigButton.classList.remove("active");
+  calibrationConfigButton.classList.remove("active");
+  resetButton.classList.add("active");
 })

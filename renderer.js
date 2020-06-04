@@ -43,45 +43,45 @@ ipcRenderer.on('rx_data', (event, data) => {
   }
 
   // 라벨 표시
-  const labelStableClass = document.getElementById("labelStable").classList;
-  const labelHoldClass = document.getElementById("labelHold").classList;
-  const labelZeroClass = document.getElementById("labelZero").classList;
-  const labelNetClass = document.getElementById("labelNet").classList;
+  const labelStableClass = document.getElementById("labelStable");
+  const labelHoldClass = document.getElementById("labelHold");
+  const labelZeroClass = document.getElementById("labelZero");
+  const labelNetClass = document.getElementById("labelNet");
 
   if(data.isStable) {
-    labelStableClass.remove('badge-secondary');
-    labelStableClass.add('badge-success');
+    labelStableClass.style.color = 'red';
   }
   else {
-    labelStableClass.remove('badge-success');
-    labelStableClass.add('badge-secondary');
+    // labelStableClass.remove('badge-success');
+    // labelStableClass.add('badge-secondary');
+    labelStableClass.style.color = 'black';
   }
 
   if(data.isHold) {
-    labelHoldClass.remove('badge-secondary');
-    labelHoldClass.add('badge-success');
+    labelHoldClass.style.color = 'red';
+    // labelHoldClass.add('badge-success');
   }
   else {
-    labelHoldClass.remove('badge-success');
-    labelHoldClass.add('badge-secondary');
+    labelHoldClass.style.color = 'black';
+    // labelHoldClass.add('badge-secondary');
   }
 
   if(data.isZero) {
-    labelZeroClass.remove('badge-secondary');
-    labelZeroClass.add('badge-success');
+    // labelZeroClass.remove('badge-secondary');
+    labelZeroClass.style.color = 'red';
   }
   else {
-    labelZeroClass.remove('badge-success');
-    labelZeroClass.add('badge-secondary');
+    // labelZeroClass.remove('badge-success');
+    labelZeroClass.style.color = 'black';
   }
 
   if(data.isNet) {
-    labelNetClass.remove('badge-secondary');
-    labelNetClass.add('badge-success');
+    // labelNetClass.remove('badge-secondary');
+    labelNetClass.style.color = 'red';
   }
   else {
-    labelNetClass.remove('badge-success');
-    labelNetClass.add('badge-secondary');
+    // labelNetClass.remove('badge-success');
+    labelNetClass.style.color = 'black';
   }
 })
 

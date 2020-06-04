@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 
 const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
@@ -72,14 +72,26 @@ class basicConfigFlag{
     this.isRead = true;
 
     // 기본설정 좌
-    this.digitalFilter = 0,
-    this.holdMode = 0,
-    this.averageTime = 0,
+    this.digitalFilter = 0, // 디지털 필터
+    this.holdMode = 0, // 홀드모드
+    this.averageTime = 0, // 평균화시간
     // 기본설정 우
-    this.zeroRange = 2,
-    this.zeroTrackingTime = 0,
-    this.zeroTrackingWidth = 0,
-    this.powerOnZero = 0
+    this.zeroRange = 2, // 제로범위
+    this.zeroTrackingTime = 0, // 영점트래킹시간
+    this.zeroTrackingWidth = 0, // 영점트래킹폭
+    this.powerOnZero = 0 // 파워온제로
+  }
+}
+
+class calibrationConfigFlag {
+  constructor() {
+    this.isRead = true,
+
+    this.capa = 10000, // 최대용량
+    this.div = 1, // 최소눈금
+    this.decimalPoint = 0, // 소수점 위치
+    this.unit = 2, // 단위
+    this.spanValue = 10000 //  스팬의 입력 전압에 관한 표시값
   }
 }
 
@@ -88,9 +100,10 @@ var win;
 var configWin;
 var pcConfigWin;
 var scale = new scaleFlag();
-var pcConfig = new uartFlag('COM1', 24, 7, CONSTANT.PARITY_EVEN, 1, CONSTANT.CRLF);
+var pcConfig = new uartFlag('COM1', 24, 8, CONSTANT.PARITY_NONE, 1, CONSTANT.CRLF);
 var serialConfig = new uartFlag();
 var basicConfig = new basicConfigFlag();
+var calibrationConfig = new calibrationConfigFlag();
 
 var createWindow = function() {
   // 브라우저 창을 생성합니다.
@@ -100,7 +113,8 @@ var createWindow = function() {
     webPreferences: {
       nodeIntegration: true
     },
-    frame: false
+    frame: false,
+    // fullscreen: true
   })
   win.loadFile('index.html');
   win.webContents.openDevTools();
@@ -115,7 +129,8 @@ var openConfigWindow = function() {
     webPreferences: {
       nodeIntegration: true
     },
-    frame: false
+    frame: false,
+    // fullscreen: true
   })
 
 
@@ -125,7 +140,7 @@ var openConfigWindow = function() {
   configWin.webContents.on('did-finish-load', () => {
     setTimeout(function() {
       getSerialConfig();
-    }, CONSTANT.ONE_THOUSAND_MS);
+    }, CONSTANT.FIVE_HUNDRED_MS);
   })
 }
 
@@ -138,7 +153,8 @@ var openPCConfigWindow = function() {
     webPreferences: {
       nodeIntegration: true
     },
-    frame: false
+    frame: false,
+    // fullscreen: true
   })
 
   pcConfigWin.loadFile('pcconfig.html');
@@ -150,7 +166,6 @@ var openPCConfigWindow = function() {
     SerialPort.list().then(
       ports => {
         pcConfigWin.webContents.send('port_list', ports);
-        pcConfig = new uartFlag('COM1', 24, 7, CONSTANT.PARITY_EVEN, 1, CONSTANT.CRLF);
         pcConfigWin.webContents.send('get_pc_config_data', pcConfig)
       }
     );
@@ -205,6 +220,18 @@ const readHeader = function(rx) {
   const header4bit = rx.substr(0, 4);
   const header5bit = rx.substr(0, 5);
 
+  if(header5bit == 'INFOK' || header5bit == 'INCOK') {
+    // 초기화 된 설정값으로 변경 후 재연결
+    const currentPort = pcConfig.port;
+    pcConfig = new uartFlag(currentPort, 24, 8, CONSTANT.PARITY_NONE, 1, CONSTANT.CRLF);
+    sp.close(err => {
+      openPort();
+      configWin.webContents.send('init_finish', 'ok');
+    });
+
+    return;
+  }
+
   if(scale.cf &&
     (header1bit == '?') ||
     (header1bit == 'I') ||
@@ -216,6 +243,7 @@ const readHeader = function(rx) {
       if(header2bit == 'CF') {
         const data = Number(rx.substr(5,7));
         if(basicConfig.isRead) {
+          // 기본설정(우)
           if(header4bit == 'CF05') {
             basicConfig.zeroRange = data;
           }
@@ -237,6 +265,32 @@ const readHeader = function(rx) {
           if(header4bit == 'CF08') {
             configWin.webContents.send('set_basic_right_config_data', 'ok');
             basicConfig.isRead = false;
+          }
+        }
+
+        if(calibrationConfig.isRead) {
+          // 교정 설정값
+          if(header4bit == 'CF03') {
+            calibrationConfig.capa = data;
+          }
+
+          if(header4bit == 'CF02') {
+            calibrationConfig.div = data;
+          }
+
+          if(header4bit == 'CF01') {
+            calibrationConfig.decimalPoint = data;
+          }
+
+          if(header4bit == 'CF09') {
+            calibrationConfig.unit = data;
+            configWin.webContents.send('get_calibration_config_data', calibrationConfig);
+          }
+        }
+        else {
+          if(header4bit == 'CF09') {
+            configWin.webContents.send('set_calibration_config_data', 'ok');
+            calibrationConfig.isRead = false;
           }
         }
       }
@@ -423,7 +477,7 @@ const makeFormat = function(data) {
   }
 
   const value = data.substr(6,8);
-  const unit = data.substr(14,3);
+  const unit = data.substr(14,2).trim();
 
    result = Number(value).toString();
 
@@ -467,6 +521,7 @@ ipcMain.on('set_pc_config_data', (event, data) => {
 
 ipcMain.on('set_serial_config_data', (event, data) => {
   console.log('set_serial_config_data');
+
   serialConfig = data;
   setSerialConfig(data);
 })
@@ -483,7 +538,11 @@ ipcMain.on('set_basic_right_config_data', (event, data) => {
   setBasicRightConfig(data);
 })
 
+ipcMain.on('set_calibration_config_data', (event, data) => {
+  console.log('set_calibration_config_data');
 
+  setCalibrationConfig(data);
+})
 
 const setSerialConfig = function(data) {
   console.log('set_serial_config');
@@ -603,9 +662,9 @@ const setBasicLeftConfig = function(data) {
               return;
             }
           })
-        }, CONSTANT.ONE_THOUSAND_MS);
+        }, CONSTANT.FIVE_HUNDRED_MS);
       })
-    }, CONSTANT.ONE_THOUSAND_MS);
+    }, CONSTANT.FIVE_HUNDRED_MS);
   })
 }
 
@@ -690,11 +749,11 @@ const setBasicRightConfig = function(data) {
                   return;
                 }
               })
-            }, CONSTANT.ONE_THOUSAND_MS);
+            }, CONSTANT.FIVE_HUNDRED_MS);
           })
-        }, CONSTANT.ONE_THOUSAND_MS);
+        }, CONSTANT.FIVE_HUNDRED_MS);
       })
-    }, CONSTANT.ONE_THOUSAND_MS);
+    }, CONSTANT.FIVE_HUNDRED_MS);
   })
 }
 
@@ -744,6 +803,103 @@ const getBasicRightConfig = function() {
   })
 }
 
+const setCalibrationConfig = function(data) {
+  console.log('set_calibration_config');
+
+  console.log('set_device_capa');
+  var command = 'CF03,' + data.capa + '\r\n';
+  scale.cf = true;
+  calibrationConfig.isRead = false;
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      return;
+    }
+    setTimeout(function(){
+      console.log('set_device_div');
+      command = 'CF02,' + data.div + '\r\n';
+      scale.cf = true;
+      calibrationConfig.isRead = false;
+      sp.write(command, function(err){
+        if(err) {
+          console.log(err.message)
+          return;
+        }
+        setTimeout(function(){
+          console.log('set_device_decimal_point');
+          command = 'CF01,' + data.decimalPoint + '\r\n';
+          scale.cf = true;
+          calibrationConfig.isRead = false;
+          sp.write(command, function(err){
+            if(err) {
+              console.log(err.message)
+              return;
+            }
+            setTimeout(function(){
+              console.log('set_device_unit');
+              command = 'CF09,' + data.unit + '\r\n';
+              scale.cf = true;
+              calibrationConfig.isRead = false;
+              sp.write(command, function(err){
+                if(err) {
+                  console.log(err.message)
+                  return;
+                }
+              })
+            }, CONSTANT.FIVE_HUNDRED_MS)
+          })
+        }, CONSTANT.FIVE_HUNDRED_MS)
+      })
+    }, CONSTANT.FIVE_HUNDRED_MS)
+  })
+}
+
+const getCalibrationConfig = function() {
+  console.log('get_calibration_config');
+
+  console.log('get_device_capa');
+  var command = '?CF03' + '\r\n';
+  scale.cf = true;
+  calibrationConfig.isRead = true;
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      return;
+    }
+    console.log('get_device_div');
+    command = '?CF02' + '\r\n';
+    scale.cf = true;
+    calibrationConfig.isRead = true;
+    sp.write(command, function(err){
+      if(err) {
+        console.log(err.message)
+        return;
+      }
+      console.log('get_device_decimal_point');
+      command = '?CF01' + '\r\n';
+      scale.cf = true;
+      calibrationConfig.isRead = true;
+      sp.write(command, function(err){
+        if(err) {
+          console.log(err.message)
+          return;
+        }
+
+        console.log('get_device_unit');
+        command = '?CF09' + '\r\n';
+        scale.cf = true;
+        calibrationConfig.isRead = true;
+        sp.write(command, function(err){
+          if(err) {
+            console.log(err.message)
+            return;
+          }
+        })
+      })
+    })
+  })
+}
+
 ipcMain.on('set_stream_mode', (event, data) => {
   console.log('set_stream_mode');
   if(sp == undefined) {
@@ -752,17 +908,53 @@ ipcMain.on('set_stream_mode', (event, data) => {
   setStreamMode();
 })
 
-ipcMain.on('get_serial_config_data', (event, arg) =>{
+ipcMain.on('get_serial_config_data', (event, arg) => {
   getSerialConfig();
 })
 
-ipcMain.on('get_basic_left_config_data', (event, arg) =>{
+ipcMain.on('get_basic_left_config_data', (event, arg) => {
   getBasicLeftConfig();
 })
 
-ipcMain.on('get_basic_right_config_data', (event, arg) =>{
+ipcMain.on('get_basic_right_config_data', (event, arg) => {
   getBasicRightConfig();
 })
+
+ipcMain.on('get_calibration_config_data', (event, arg) => {
+  getCalibrationConfig();
+})
+
+ipcMain.on('init_function_f', (event, arg) => {
+  console.log('init_function_f');
+
+  initFunctionF();
+})
+
+const initFunctionF = function() {
+  var command = 'INF' + '\r\n';
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      return;
+    }
+  });
+}
+
+ipcMain.on('init_config', (event, arg) => {
+  console.log('init_config');
+
+  initConfig();
+})
+
+const initConfig = function() {
+  var command = 'INC' + '\r\n';
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      return;
+    }
+  });
+}
 
 ipcMain.on('set_clear_tare', (event, arg) =>{
   console.log('set_clear_tare');
@@ -819,6 +1011,8 @@ ipcMain.on('set_hold', (event, arg) =>{
 ipcMain.on('print', (event, arg) => {
   console.log('print');
   // TODO 프린트 기능 추가 필요
+  dialog.showMessageBox({type: 'info', title: '프린트', message: '준비중입니다.'});
+  return;
 })
 
 const openPort = function() {
