@@ -83,6 +83,17 @@ class basicConfigFlag{
   }
 }
 
+class externalPrintConfigFlag{
+  constructor() {
+    this.isRead = true,
+
+    this.printCondition = 0,
+    this.configValue = 0,
+    this.comparatorMode = 2,
+    this.nearZero = 0
+  }
+}
+
 class calibrationConfigFlag {
   constructor() {
     this.isRead = true,
@@ -103,6 +114,7 @@ var scale = new scaleFlag();
 var pcConfig = new uartFlag('COM1', 24, 8, CONSTANT.PARITY_NONE, 1, CONSTANT.CRLF);
 var serialConfig = new uartFlag();
 var basicConfig = new basicConfigFlag();
+var externalPrintConfig = new externalPrintConfigFlag();
 var calibrationConfig = new calibrationConfigFlag();
 
 var createWindow = function() {
@@ -224,7 +236,11 @@ const readHeader = function(rx) {
     // 초기화 된 설정값으로 변경 후 재연결
     const currentPort = pcConfig.port;
     pcConfig = new uartFlag(currentPort, 24, 8, CONSTANT.PARITY_NONE, 1, CONSTANT.CRLF);
-    sp.close(err => {
+    sp.close(function(err){
+      if(err) {
+        console.log(err.message)
+        return;
+      }
       openPort();
       configWin.webContents.send('init_finish', 'ok');
     });
@@ -361,21 +377,29 @@ const readHeader = function(rx) {
           }
         }
 
+        if(externalPrintConfig.isRead){
+          if(header4bit == 'F101') {
+            externalPrintConfig.printCondition = data;
+          }
 
-        if(header4bit == 'F101') {
+          if(header4bit == 'F102') {
+            externalPrintConfig.configValue = data;
+          }
 
+          if(header4bit == 'F103') {
+            externalPrintConfig.comparatorMode = data;
+          }
+
+          if(header4bit == 'F104') {
+            externalPrintConfig.nearZero = data;
+            configWin.webContents.send('get_external_print_config_data', externalPrintConfig);
+          }
         }
-
-        if(header4bit == 'F102') {
-
-        }
-
-        if(header4bit == 'F103') {
-
-        }
-
-        if(header4bit == 'F104') {
-
+        else {
+          if(header4bit == 'F104') {
+            configWin.webContents.send('set_external_print_config_data', 'ok');
+            externalPrintConfig.isRead = false;
+          }
         }
 
         if(header4bit == 'F201') {
@@ -537,6 +561,14 @@ ipcMain.on('set_basic_right_config_data', (event, data) => {
 
   setBasicRightConfig(data);
 })
+
+ipcMain.on('set_external_print_config_data', (event, data) => {
+  console.log('set_external_print_config_data');
+
+  setExternalPrintConfig(data);
+})
+
+
 
 ipcMain.on('set_calibration_config_data', (event, data) => {
   console.log('set_calibration_config_data');
@@ -803,6 +835,102 @@ const getBasicRightConfig = function() {
   })
 }
 
+const setExternalPrintConfig = function(data) {
+  console.log('set_external_print_config');
+
+  console.log('set_device_print_condition');
+  var command = 'F101,' + data.printCondition + '\r\n';
+  scale.f = true;
+  externalPrintConfig.isRead = false;
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      return;
+    }
+    setTimeout(function(){
+      console.log('set_device_config_value');
+      command = 'F102,' + data.configValue + '\r\n';
+      scale.f = true;
+      externalPrintConfig.isRead = false;
+      sp.write(command, function(err){
+        if(err) {
+          console.log(err.message)
+          return;
+        }
+        setTimeout(function(){
+          console.log('set_device_comparator_mode');
+          command = 'F103,' + data.comparatorMode + '\r\n';
+          scale.f = true;
+          externalPrintConfig.isRead = false;
+          sp.write(command, function(err){
+            if(err) {
+              console.log(err.message)
+              return;
+            }
+            setTimeout(function(){
+              console.log('set_device_near_zero');
+              command = 'F104,' + data.nearZero + '\r\n';
+              scale.f = true;
+              externalPrintConfig.isRead = false;
+              sp.write(command, function(err){
+                if(err) {
+                  console.log(err.message)
+                  return;
+                }
+              })
+            }, CONSTANT.FIVE_HUNDRED_MS)
+          })
+        }, CONSTANT.FIVE_HUNDRED_MS)
+      })
+    }, CONSTANT.FIVE_HUNDRED_MS)
+  })
+}
+
+const getExternalPrintConfig = function() {
+  console.log('get_external_print_config');
+
+  console.log('get_device_print_condition');
+  var command = '?F101' + '\r\n';
+  scale.f = true;
+  externalPrintConfig.isRead = true;
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      return;
+    }
+    console.log('get_device_config_value');
+    command = '?F102' + '\r\n';
+    scale.f = true;
+    externalPrintConfig.isRead = true;
+    sp.write(command, function(err){
+      if(err) {
+        console.log(err.message)
+        return;
+      }
+      console.log('get_device_comparator_mode');
+      command = '?F103' + '\r\n';
+      scale.f = true;
+      externalPrintConfig.isRead = true;
+      sp.write(command, function(err){
+        if(err) {
+          console.log(err.message)
+          return;
+        }
+        console.log('get_device_near_zero');
+        command = '?F104' + '\r\n';
+        scale.f = true;
+        externalPrintConfig.isRead = true;
+        sp.write(command, function(err){
+          if(err) {
+            console.log(err.message)
+            return;
+          }
+        })
+      })
+    })
+  })
+}
+
 const setCalibrationConfig = function(data) {
   console.log('set_calibration_config');
 
@@ -918,6 +1046,10 @@ ipcMain.on('get_basic_left_config_data', (event, arg) => {
 
 ipcMain.on('get_basic_right_config_data', (event, arg) => {
   getBasicRightConfig();
+})
+
+ipcMain.on('get_external_print_config_data', (event, arg) => {
+  getExternalPrintConfig();
 })
 
 ipcMain.on('get_calibration_config_data', (event, arg) => {
