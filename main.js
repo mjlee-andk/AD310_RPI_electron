@@ -221,7 +221,7 @@ var rssetCommand = function() {
   })
 }
 
-//TODO scale의 변수명 수정 및 scale 클래스 추가, makeFormat 함수 만들기
+//TODO scale의 변수명 수정 및 scale 클래스 추가
 const readHeader = function(rx) {
   // TODO trim을 하는게 맞는건지 판단 필요
   rx = rx.trim();
@@ -231,6 +231,7 @@ const readHeader = function(rx) {
   const header3bit = rx.substr(0, 3);
   const header4bit = rx.substr(0, 4);
   const header5bit = rx.substr(0, 5);
+  const header7bit = rx.substr(0, 7);
 
   if(header5bit == 'INFOK' || header5bit == 'INCOK') {
     // 초기화 된 설정값으로 변경 후 재연결
@@ -252,7 +253,8 @@ const readHeader = function(rx) {
     (header1bit == '?') ||
     (header1bit == 'I') ||
     (header2bit == 'CF') ||
-    (header2bit == 'CS')) {
+    (header7bit == 'CALZERO') ||
+    (header7bit == 'CALSPAN')) {
       scale.cf = false;
       console.log('scale cf');
 
@@ -302,6 +304,11 @@ const readHeader = function(rx) {
             calibrationConfig.unit = data;
             configWin.webContents.send('get_calibration_config_data', calibrationConfig);
           }
+          // 교정
+          if(header4bit == 'CF04') {
+            calibrationConfig.spanValue = data;
+            configWin.webContents.send('get_cal_data', calibrationConfig);
+          }
         }
         else {
           if(header4bit == 'CF09') {
@@ -309,6 +316,16 @@ const readHeader = function(rx) {
             calibrationConfig.isRead = false;
           }
         }
+      }
+
+      if(header7bit == 'CALZERO') {
+        configWin.webContents.send('set_cal_zero', 'ok');
+        return;
+      }
+
+      if(header7bit == 'CALSPAN') {
+        configWin.webContents.send('set_cal_span', 'ok');
+        return;
       }
     }
   else if (scale.f &&
@@ -568,13 +585,29 @@ ipcMain.on('set_external_print_config_data', (event, data) => {
   setExternalPrintConfig(data);
 })
 
-
-
 ipcMain.on('set_calibration_config_data', (event, data) => {
   console.log('set_calibration_config_data');
 
   setCalibrationConfig(data);
 })
+
+ipcMain.on('set_cal_zero', (event, data) => {
+  console.log('set_cal_zero');
+
+  setCalZero();
+})
+
+ipcMain.on('set_cal_span', (event, data) => {
+  console.log('set_cal_span');
+
+  setCalSpan();
+})
+
+ipcMain.on('set_span_value_data', (event, data) => {
+  console.log('set_span_value_data');
+  setSpanValue(data);
+})
+
 
 const setSerialConfig = function(data) {
   console.log('set_serial_config');
@@ -1028,6 +1061,65 @@ const getCalibrationConfig = function() {
   })
 }
 
+const setCalZero = function() {
+  console.log('set_cal_zero');
+
+  console.log('set_device_cal_zero');
+  var command = 'CALZERO' + '\r\n';
+  scale.cf = true;
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      configWin.webContents.send('set_cal_zero', 'fail');
+      return;
+    }
+  });
+}
+
+const setCalSpan = function() {
+  console.log('set_cal_span');
+
+  console.log('set_device_cal_span');
+  var command = 'CALSPAN' + '\r\n';
+  scale.cf = true;
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      configWin.webContents.send('set_cal_span', 'fail');
+      return;
+    }
+  });
+}
+
+const setSpanValue = function(data) {
+  console.log('set_span_value');
+
+  var command = 'CF04,' + data + '\r\n';
+  scale.cf = true;
+  calibrationConfig.isRead = false;
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      return;
+    }
+  })
+}
+
+const getCal = function() {
+  console.log('get_cal');
+
+  console.log('get_device_span_value');
+  var command = '?CF04' + '\r\n';
+  scale.cf = true;
+  calibrationConfig.isRead = true;
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      return;
+    }
+  })
+}
+
 ipcMain.on('set_stream_mode', (event, data) => {
   console.log('set_stream_mode');
   if(sp == undefined) {
@@ -1055,6 +1147,10 @@ ipcMain.on('get_external_print_config_data', (event, arg) => {
 ipcMain.on('get_calibration_config_data', (event, arg) => {
   getCalibrationConfig();
 })
+
+ipcMain.on('get_cal_data', (event, arg) => {
+  getCal();
+});
 
 ipcMain.on('init_function_f', (event, arg) => {
   console.log('init_function_f');

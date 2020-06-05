@@ -33,7 +33,7 @@ configOkButton.addEventListener('click', function(){
     setExternalPrintConfigData();
   }
 
-  if(calibrationDiv.style.display == 'flex') {
+  if(calibrationConfigDiv.style.display == 'flex') {
     setCalibrationConfigData();
   }
 
@@ -387,8 +387,8 @@ const setExternalPrintConfigData = function() {
   return;
 }
 
-// 교정
-// TODO 최대용량, 스팬값 추가해야함.
+// 교정 설정
+// TODO 스팬값 추가해야함.
 const capaText = document.getElementById("capaText");
 const capaStepUp = document.getElementById("capaStepUp");
 const capaStepDown = document.getElementById("capaStepDown");
@@ -436,6 +436,107 @@ const setCalibrationConfigData = function() {
   };
 
   ipcRenderer.send('set_calibration_config_data', calibrationConfigData);
+  return;
+}
+
+// 교정
+const spanValueText = document.getElementById("spanValueText");
+const spanValueStepUp = document.getElementById("spanValueStepUp");
+const spanValueStepDown = document.getElementById("spanValueStepDown");
+const spanValueOptionSelect = document.getElementById("spanValueOptionSelect");
+
+const calZeroButton = document.getElementById("calZeroButton");
+const checkCalZero = document.getElementById("checkCalZero");
+
+const calSpanButton = document.getElementById("calSpanButton");
+const checkCalSpan = document.getElementById("checkCalSpan");
+
+spanValueStepUp.addEventListener('click', function() {
+  const selectedSpanValue = spanValueOptionSelect.options[spanValueOptionSelect.selectedIndex].value;
+  spanValueText.stepUp(selectedSpanValue);
+})
+
+spanValueStepDown.addEventListener('click', function() {
+  const selectedSpanValue = spanValueOptionSelect.options[spanValueOptionSelect.selectedIndex].value;
+  spanValueText.stepDown(selectedSpanValue);
+})
+
+calZeroButton.addEventListener('click', function(){
+  remote.dialog
+  .showMessageBox(
+    { type: 'info',
+      title: 'CAL 0',
+      message: 'CAL 0를 진행하시겠습니까?',
+      buttons: ['ok', 'cancel']
+    }).then(result => {
+      console.log(result);
+      const response = result.response;
+      if(response == 0) {
+        ipcRenderer.send('set_cal_zero', 'ok');
+      }
+      else {
+        checkCalZero.innerHTML = 'NG';
+      }
+
+    }).catch(err => {
+      console.log(err);
+    });
+})
+
+calSpanButton.addEventListener('click', function(){
+  remote.dialog
+  .showMessageBox(
+    { type: 'info',
+      title: 'CAL F',
+      message: 'CAL F를 진행하시겠습니까?',
+      buttons: ['ok', 'cancel']
+    }).then(result => {
+      console.log(result);
+      const response = result.response;
+      if(response == 0) {
+        ipcRenderer.send('set_cal_span', 'ok');
+      }
+      else {
+        checkCalSpan.innerHTML = 'NG';
+      }
+
+    }).catch(err => {
+      console.log(err);
+    });
+})
+
+ipcRenderer.on('set_cal_zero', (event, arg) => {
+  console.log('set_cal_zero');
+
+  if(arg == 'ok') {
+    checkCalZero.innerHTML = 'OK';
+  }
+  else {
+    checkCalZero.innerHTML = 'NG';
+  }
+});
+
+ipcRenderer.on('set_cal_span', (event, arg) => {
+  console.log('set_cal_span');
+
+  if(arg == 'ok') {
+    setSpanValue();
+    checkCalSpan.innerHTML = 'OK';
+  }
+  else {
+    checkCalSpan.innerHTML = 'NG';
+  }
+});
+
+ipcRenderer.on('get_cal_data', (event, data) => {
+  console.log('get_cal_data');
+  spanValueText.value = data.spanValue;
+});
+
+const setSpanValue = function() {
+  console.log('setSpanValue');
+
+  ipcRenderer.send('set_span_value_data', spanValueText.value);
   return;
 }
 
@@ -507,13 +608,15 @@ const basicLeftConfigButton = document.getElementById("basicLeftConfigButton");
 const basicRightConfigButton = document.getElementById("basicRightConfigButton");
 const externalPrintConfigButton = document.getElementById("externalPrintConfigButton");
 const calibrationConfigButton = document.getElementById("calibrationConfigButton");
+const calButton = document.getElementById("calButton");
 const resetButton = document.getElementById("resetButton");
 
 const serialDiv = document.getElementById("serialDiv");
 const basicLeftDiv = document.getElementById("basicLeftDiv");
 const basicRightDiv = document.getElementById("basicRightDiv");
 const externalPrintDiv = document.getElementById("externalPrintDiv");
-const calibrationDiv = document.getElementById("calibrationDiv");
+const calibrationConfigDiv = document.getElementById("calibrationConfigDiv");
+const calDiv = document.getElementById("calDiv");
 const resetDiv = document.getElementById("resetDiv");
 
 serialDiv.style.display = "flex";
@@ -525,7 +628,8 @@ serialConfigButton.addEventListener('click', function(){
   basicLeftDiv.style.display = "none";
   basicRightDiv.style.display = "none";
   externalPrintDiv.style.display = "none";
-  calibrationDiv.style.display = "none";
+  calibrationConfigDiv.style.display = "none";
+  calDiv.style.display = "none";
   resetDiv.style.display = "none";
 
   serialConfigButton.classList.add("active");
@@ -533,6 +637,7 @@ serialConfigButton.addEventListener('click', function(){
   basicRightConfigButton.classList.remove("active");
   externalPrintConfigButton.classList.remove("active");
   calibrationConfigButton.classList.remove("active");
+  calButton.classList.remove("active");
   resetButton.classList.remove("active");
 })
 
@@ -543,7 +648,8 @@ basicLeftConfigButton.addEventListener('click', function(){
   basicLeftDiv.style.display = "flex";
   basicRightDiv.style.display = "none";
   externalPrintDiv.style.display = "none";
-  calibrationDiv.style.display = "none";
+  calibrationConfigDiv.style.display = "none";
+  calDiv.style.display = "none";
   resetDiv.style.display = "none";
 
   serialConfigButton.classList.remove("active");
@@ -551,6 +657,7 @@ basicLeftConfigButton.addEventListener('click', function(){
   basicRightConfigButton.classList.remove("active");
   externalPrintConfigButton.classList.remove("active");
   calibrationConfigButton.classList.remove("active");
+  calButton.classList.remove("active");
   resetButton.classList.remove("active");
 })
 
@@ -561,7 +668,8 @@ basicRightConfigButton.addEventListener('click', function(){
   basicLeftDiv.style.display = "none";
   basicRightDiv.style.display = "flex";
   externalPrintDiv.style.display = "none";
-  calibrationDiv.style.display = "none";
+  calibrationConfigDiv.style.display = "none";
+  calDiv.style.display = "none";
   resetDiv.style.display = "none";
 
   serialConfigButton.classList.remove("active");
@@ -569,6 +677,7 @@ basicRightConfigButton.addEventListener('click', function(){
   basicRightConfigButton.classList.add("active");
   externalPrintConfigButton.classList.remove("active");
   calibrationConfigButton.classList.remove("active");
+  calButton.classList.remove("active");
   resetButton.classList.remove("active");
 })
 
@@ -581,7 +690,8 @@ externalPrintConfigButton.addEventListener('click', function(){
   basicLeftDiv.style.display = "none";
   basicRightDiv.style.display = "none";
   externalPrintDiv.style.display = "flex";
-  calibrationDiv.style.display = "none";
+  calibrationConfigDiv.style.display = "none";
+  calDiv.style.display = "none";
   resetDiv.style.display = "none";
 
   serialConfigButton.classList.remove("active");
@@ -589,6 +699,7 @@ externalPrintConfigButton.addEventListener('click', function(){
   basicRightConfigButton.classList.remove("active");
   externalPrintConfigButton.classList.add("active");
   calibrationConfigButton.classList.remove("active");
+  calButton.classList.remove("active");
   resetButton.classList.remove("active");
 })
 
@@ -601,7 +712,8 @@ calibrationConfigButton.addEventListener('click', function(){
   basicLeftDiv.style.display = "none";
   basicRightDiv.style.display = "none";
   externalPrintDiv.style.display = "none";
-  calibrationDiv.style.display = "flex";
+  calibrationConfigDiv.style.display = "flex";
+  calDiv.style.display = "none";
   resetDiv.style.display = "none";
 
   serialConfigButton.classList.remove("active");
@@ -609,6 +721,29 @@ calibrationConfigButton.addEventListener('click', function(){
   basicRightConfigButton.classList.remove("active");
   externalPrintConfigButton.classList.remove("active");
   calibrationConfigButton.classList.add("active");
+  calButton.classList.remove("active");
+  resetButton.classList.remove("active");
+})
+
+calButton.addEventListener('click', function(){
+  // remote.dialog.showMessageBox({type: 'info', title: '교정', message: '준비중입니다.'});
+  // return;
+  ipcRenderer.send('get_cal_data', 'ok');
+
+  serialDiv.style.display = "none";
+  basicLeftDiv.style.display = "none";
+  basicRightDiv.style.display = "none";
+  externalPrintDiv.style.display = "none";
+  calibrationConfigDiv.style.display = "none";
+  calDiv.style.display = "flex";
+  resetDiv.style.display = "none";
+
+  serialConfigButton.classList.remove("active");
+  basicLeftConfigButton.classList.remove("active");
+  basicRightConfigButton.classList.remove("active");
+  externalPrintConfigButton.classList.remove("active");
+  calibrationConfigButton.classList.remove("active");
+  calButton.classList.add("active");
   resetButton.classList.remove("active");
 })
 
@@ -617,7 +752,8 @@ resetButton.addEventListener('click', function(){
   basicLeftDiv.style.display = "none";
   basicRightDiv.style.display = "none";
   externalPrintDiv.style.display = "none";
-  calibrationDiv.style.display = "none";
+  calibrationConfigDiv.style.display = "none";
+  calDiv.style.display = "none";
   resetDiv.style.display = "flex";
 
   serialConfigButton.classList.remove("active");
@@ -625,5 +761,6 @@ resetButton.addEventListener('click', function(){
   basicRightConfigButton.classList.remove("active");
   externalPrintConfigButton.classList.remove("active");
   calibrationConfigButton.classList.remove("active");
+  calButton.classList.remove("active");
   resetButton.classList.add("active");
 })
