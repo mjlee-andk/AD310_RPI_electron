@@ -284,14 +284,39 @@ const setBasicRightConfigData = function() {
 
 
 // 외부 출력
-// TODO 설정값, 제로근처 수정필요
 const printConditionRadios1 = document.getElementById("printConditionRadios1");
 const printConditionRadios2 = document.getElementById("printConditionRadios2");
 const configValueText = document.getElementById("configValueText");
+const configValueStepUp = document.getElementById("configValueStepUp");
+const configValueStepDown = document.getElementById("configValueStepDown");
+const configValueOptionSelect = document.getElementById("configValueOptionSelect");
 const comparatorModeRadios1 = document.getElementById("comparatorModeRadios1");
 const comparatorModeRadios2 = document.getElementById("comparatorModeRadios2");
 const comparatorModeRadios3 = document.getElementById("comparatorModeRadios3");
 const nearZeroText = document.getElementById("nearZeroText");
+const nearZeroStepUp = document.getElementById("nearZeroStepUp");
+const nearZeroStepDown = document.getElementById("nearZeroStepDown");
+const nearZeroOptionSelect = document.getElementById("nearZeroOptionSelect");
+
+configValueStepUp.addEventListener('click', function() {
+  const selectedConfigValueOption = configValueOptionSelect.options[configValueOptionSelect.selectedIndex].value;
+  configValueText.stepUp(selectedConfigValueOption);
+})
+
+configValueStepDown.addEventListener('click', function() {
+  const selectedConfigValueOption = configValueOptionSelect.options[configValueOptionSelect.selectedIndex].value;
+  configValueText.stepDown(selectedConfigValueOption);
+})
+
+nearZeroStepUp.addEventListener('click', function() {
+  const selectedNearZeroOption = nearZeroOptionSelect.options[nearZeroOptionSelect.selectedIndex].value;
+  nearZeroText.stepUp(selectedNearZeroOption);
+})
+
+nearZeroStepDown.addEventListener('click', function() {
+  const selectedNearZeroOption = nearZeroOptionSelect.options[nearZeroOptionSelect.selectedIndex].value;
+  nearZeroText.stepDown(selectedNearZeroOption);
+})
 
 ipcRenderer.on('get_external_print_config_data', (event, data) => {
   console.log('get_external_print_config_data');
@@ -345,7 +370,7 @@ const setExternalPrintConfigData = function() {
     externalPrintConfigData.printCondition = printConditionRadios2.value;
   }
 
-  //TODO 설정값 입력
+  externalPrintConfigData.configValue = configValueText.value;
 
   if(comparatorModeRadios1.checked) {
     externalPrintConfigData.comparatorMode = comparatorModeRadios1.value;
@@ -357,22 +382,34 @@ const setExternalPrintConfigData = function() {
     externalPrintConfigData.comparatorMode = comparatorModeRadios3.value;
   }
 
-  //TODO 제로근처 입력
-
+  externalPrintConfigData.nearZero = nearZeroText.value;
   ipcRenderer.send('set_external_print_config_data', externalPrintConfigData);
   return;
 }
 
-
 // 교정
 // TODO 최대용량, 스팬값 추가해야함.
+const capaText = document.getElementById("capaText");
+const capaStepUp = document.getElementById("capaStepUp");
+const capaStepDown = document.getElementById("capaStepDown");
+const capaOptionSelect = document.getElementById("capaOptionSelect");
 const divSelect = document.getElementById("divSelect");
 const decimalPointSelect = document.getElementById("decimalPointSelect");
 const unitSelect = document.getElementById("unitSelect");
 
+capaStepUp.addEventListener('click', function() {
+  const selectedCapaOption = capaOptionSelect.options[capaOptionSelect.selectedIndex].value;
+  capaText.stepUp(selectedCapaOption);
+})
+
+capaStepDown.addEventListener('click', function() {
+  const selectedCapaOption = capaOptionSelect.options[capaOptionSelect.selectedIndex].value;
+  capaText.stepDown(selectedCapaOption);
+})
+
 ipcRenderer.on('get_calibration_config_data', (event, data) => {
   console.log('get_calibration_config_data');
-
+  capaText.value = data.capa;
   divSelect.value = data.div;
   decimalPointSelect.value = data.decimalPoint;
   unitSelect.value = data.unit;
@@ -386,13 +423,13 @@ ipcRenderer.on('set_calibration_config_data', (event, arg) => {
     var window = remote.getCurrentWindow();
     window.close();
   }, CONSTANT.FIVE_HUNDRED_MS);
-})
+});
 
 const setCalibrationConfigData = function() {
   console.log('setCalibrationConfigData');
 
   var calibrationConfigData = {
-    capa: 10000,
+    capa: capaText.value,
     div: divSelect.options[divSelect.selectedIndex].value,
     decimalPoint: decimalPointSelect.options[decimalPointSelect.selectedIndex].value,
     unit: unitSelect.options[unitSelect.selectedIndex].value,
@@ -401,7 +438,6 @@ const setCalibrationConfigData = function() {
   ipcRenderer.send('set_calibration_config_data', calibrationConfigData);
   return;
 }
-
 
 // 초기화
 const initFunctionFButton = document.getElementById("initFunctionFButton");
