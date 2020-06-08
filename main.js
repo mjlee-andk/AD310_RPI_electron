@@ -152,6 +152,7 @@ var openConfigWindow = function() {
   configWin.webContents.on('did-finish-load', () => {
     setTimeout(function() {
       getSerialConfig();
+      getRomVer();
     }, CONSTANT.FIVE_HUNDRED_MS);
   })
 }
@@ -245,6 +246,13 @@ const readHeader = function(rx) {
       openPort();
       configWin.webContents.send('init_finish', 'ok');
     });
+
+    return;
+  }
+
+  if(header3bit == 'VER') {
+    const data = Number(rx.substr(4,3))/100;
+    configWin.webContents.send('get_rom_ver', data);
 
     return;
   }
@@ -444,6 +452,10 @@ const readHeader = function(rx) {
           serialConfig.terminator = data;
           console.log(serialConfig);
           configWin.webContents.send('get_serial_config_data', serialConfig);
+
+          setTimeout(function(){
+            // getRomVer();
+          },1000);
         }
       }
     }
@@ -608,6 +620,16 @@ ipcMain.on('set_span_value_data', (event, data) => {
   setSpanValue(data);
 })
 
+const getRomVer = function() {
+  console.log('get_device_rom_ver');
+  var command = '?VER' + '\r\n';
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message);
+      return;
+    }
+  });
+}
 
 const setSerialConfig = function(data) {
   console.log('set_serial_config');
@@ -645,7 +667,7 @@ const getSerialConfig = function() {
   scale.f = true;
   sp.write(command, function(err){
     if(err) {
-      console.log(err.message)
+      console.log(err.message);
       serialConfig = new uartFlag();
       return;
     }
@@ -1266,23 +1288,17 @@ const openPort = function() {
     }, 1000);
 
     setTimeout(function(){
-      if(scale.waiting_sec >= 1) {
+      if(scale.waiting_sec >= 3) {
+        console.log('568');
         scale.waiting_sec = 0;
         scale.displayMsg = '-----';
-        sp.close(function(err){
-          if(err) {
-            console.log(err.message)
-            return;
-          }
-          console.log('closed');
-        });
         // 연결 안 된 상태
         clearInterval(secondTimer);
         win.webContents.send('rx_data', scale);
 
         return;
       }
-    }, 1500);
+    }, 4000);
 
     const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CONSTANT.CRLF ? '\r\n' : '\r' }));
     lineStream.on('data', function(rx) {
@@ -1296,6 +1312,7 @@ const openPort = function() {
       if(scale.displayMsg == '-----' || scale.displayMsg == 'off') {
         return;
       }
+      console.log('dqfw');
       win.webContents.send('on_off', 'OFF');
     },400)
 

@@ -47,7 +47,13 @@ closeConfigWindowButton.addEventListener('click', function(){
   window.close();
 });
 
+const romVer = document.getElementById("romVer");
 
+ipcRenderer.on('get_rom_ver', (event, data) => {
+  console.log('get_rom_ver');
+
+  romVer.innerHTML = data;
+});
 
 //
 // 내용
@@ -629,6 +635,8 @@ serialConfigButton.addEventListener('click', function(){
   calDiv.style.display = "none";
   resetDiv.style.display = "none";
 
+  configOkButton.style.display = "flex";
+
   serialConfigButton.classList.add("active");
   basicLeftConfigButton.classList.remove("active");
   basicRightConfigButton.classList.remove("active");
@@ -649,6 +657,8 @@ basicLeftConfigButton.addEventListener('click', function(){
   calDiv.style.display = "none";
   resetDiv.style.display = "none";
 
+  configOkButton.style.display = "flex";
+
   serialConfigButton.classList.remove("active");
   basicLeftConfigButton.classList.add("active");
   basicRightConfigButton.classList.remove("active");
@@ -668,6 +678,8 @@ basicRightConfigButton.addEventListener('click', function(){
   calibrationConfigDiv.style.display = "none";
   calDiv.style.display = "none";
   resetDiv.style.display = "none";
+
+  configOkButton.style.display = "flex";
 
   serialConfigButton.classList.remove("active");
   basicLeftConfigButton.classList.remove("active");
@@ -691,6 +703,8 @@ externalPrintConfigButton.addEventListener('click', function(){
   calDiv.style.display = "none";
   resetDiv.style.display = "none";
 
+  configOkButton.style.display = "flex";
+
   serialConfigButton.classList.remove("active");
   basicLeftConfigButton.classList.remove("active");
   basicRightConfigButton.classList.remove("active");
@@ -712,6 +726,8 @@ calibrationConfigButton.addEventListener('click', function(){
   calibrationConfigDiv.style.display = "flex";
   calDiv.style.display = "none";
   resetDiv.style.display = "none";
+
+  configOkButton.style.display = "flex";
 
   serialConfigButton.classList.remove("active");
   basicLeftConfigButton.classList.remove("active");
@@ -735,6 +751,8 @@ calButton.addEventListener('click', function(){
   calDiv.style.display = "flex";
   resetDiv.style.display = "none";
 
+  configOkButton.style.display = "none";
+
   serialConfigButton.classList.remove("active");
   basicLeftConfigButton.classList.remove("active");
   basicRightConfigButton.classList.remove("active");
@@ -752,6 +770,8 @@ resetButton.addEventListener('click', function(){
   calibrationConfigDiv.style.display = "none";
   calDiv.style.display = "none";
   resetDiv.style.display = "flex";
+
+  configOkButton.style.display = "none";
 
   serialConfigButton.classList.remove("active");
   basicLeftConfigButton.classList.remove("active");
