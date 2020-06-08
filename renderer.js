@@ -2,26 +2,36 @@ const { BrowserWindow, ipcRenderer } = require('electron')
 const remote = require('electron').remote;
 
 // 메인 화면 상단 버튼
-const closeMainWindowButton = document.getElementById("closeMainWindow");
 const openPCConfigWindowButton = document.getElementById("openPCConfigWindow");
 const openConfigWindowButton = document.getElementById("openConfigWindow");
-
-closeMainWindowButton.addEventListener('click', function(){
-  ipcRenderer.send('set_stream_mode', 'ok');
-  var window = remote.getCurrentWindow();
-  window.close();
-})
+const openInfoWindowButton = document.getElementById("openInfoWindow");
+const closeMainWindowButton = document.getElementById("closeMainWindow");
 
 openPCConfigWindowButton.addEventListener('click', function(){
   console.log('openPCConfigWindowButton');
+  openPCConfigWindowButton.blur();
   ipcRenderer.send('open_pc_config_window', 'ok');
 })
 
 openConfigWindowButton.addEventListener('click', function(){
+  openConfigWindowButton.blur();
   console.log('openConfigWindowButton');
   ipcRenderer.send('open_config_window', 'ok');
 })
 
+openInfoWindowButton.addEventListener('click', function(){
+  openInfoWindowButton.blur();
+  console.log('openInfoWindowButton');
+  ipcRenderer.send('open_info_window', 'ok');
+})
+
+closeMainWindowButton.addEventListener('click', function(){
+  closeMainWindowButton.blur();
+  console.log('closeMainWindowButton');
+  ipcRenderer.send('set_stream_mode', 'ok');
+  var window = remote.getCurrentWindow();
+  window.close();
+})
 
 
 ipcRenderer.on('rx_data', (event, data) => {
@@ -118,32 +128,37 @@ ipcRenderer.on('on_off', (event, message) => {
   }
 });
 
-
 ipcRenderer.on('print', (event, data) => {
 
 });
 
 
 setClearTareButton.addEventListener('click', function(){
+  setClearTareButton.blur();
   ipcRenderer.send('set_clear_tare', 'ok');
 })
 
 setZeroTareButton.addEventListener('click', function(){
+  setZeroTareButton.blur();
   ipcRenderer.send('set_zero_tare', 'ok');
 })
 
 setGrossNetButton.addEventListener('click', function(){
+  setGrossNetButton.blur();
   ipcRenderer.send('set_gross_net', 'ok');
 })
 
 setHoldButton.addEventListener('click', function(){
+  setHoldButton.blur();
   ipcRenderer.send('set_hold', 'ok');
 })
 
 printButton.addEventListener('click', function(){
+  printButton.blur();
   ipcRenderer.send('print', 'ok');
 })
 
 onOffButton.addEventListener('click', function(){
+  onOffButton.blur();
   ipcRenderer.send('on_off', 'ok');
 })

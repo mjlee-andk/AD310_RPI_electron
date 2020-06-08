@@ -1,6 +1,5 @@
 const { BrowserWindow, ipcRenderer } = require('electron')
 const remote = require('electron').remote;
-
 const CONSTANT = require('./constant');
 
 class uartFlag{
@@ -19,6 +18,7 @@ class uartFlag{
 //
 const configOkButton = document.getElementById("configOk");
 configOkButton.addEventListener('click', function(){
+  configOkButton.blur();
   if(serialDiv.style.display == 'flex') {
     setSerialConfigData();
   }
@@ -36,9 +36,6 @@ configOkButton.addEventListener('click', function(){
   if(calibrationConfigDiv.style.display == 'flex') {
     setCalibrationConfigData();
   }
-
-
-  // tmpfunc();
 })
 
 const closeConfigWindowButton = document.getElementById("closeConfigWindow");

@@ -1245,35 +1245,68 @@ ipcMain.on('print', (event, arg) => {
 
 const openPort = function() {
   try {
+    var parity = 'none';
+    if(pcConfig.parity == CONSTANT.ODD) {
+      parity = 'odd';
+    }
+    else if(pcConfig.parity == CONSTANT.EVEN) {
+      parity = 'even';
+    }
     sp = new SerialPort(pcConfig.port, {
       baudRate: pcConfig.baudrate * 100,
       dataBits: Number(pcConfig.databits),
+      parity: parity,
       stopBits: Number(pcConfig.stopbits)
     });
 
-    if(pcConfig.parity == CONSTANT.NONE) {
-      sp.parity = 'none';
-    }
-    else if(pcConfig.parity == CONSTANT.ODD) {
-      sp.parity = 'odd';
-    }
-    else if(pcConfig.parity == CONSTANT.EVEN) {
-      sp.parity = 'even';
-    }
+    // 3초 타이머 스타트
+    const secondTimer = setInterval(function(){
+      scale.waiting_sec += 1;
+      console.log(scale.waiting_sec);
+    }, 1000);
+
+    setTimeout(function(){
+      if(scale.waiting_sec >= 1) {
+        scale.waiting_sec = 0;
+        scale.displayMsg = '-----';
+        sp.close(function(err){
+          if(err) {
+            console.log(err.message)
+            return;
+          }
+          console.log('closed');
+        });
+        // 연결 안 된 상태
+        clearInterval(secondTimer);
+        win.webContents.send('rx_data', scale);
+
+        return;
+      }
+    }, 1500);
 
     const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CONSTANT.CRLF ? '\r\n' : '\r' }));
     lineStream.on('data', function(rx) {
+      // 타이머 리셋
+      clearInterval(secondTimer);
       readHeader(rx);
       win.webContents.send('rx_data', scale);
     });
 
-    win.webContents.send('on_off', 'OFF');
+    setTimeout(function() {
+      if(scale.displayMsg == '-----' || scale.displayMsg == 'off') {
+        return;
+      }
+      win.webContents.send('on_off', 'OFF');
+    },400)
+
+
   }
   catch(e) {
     console.log(e);
     console.log('Cannot open port.');
   }
 };
+
 // TODO 주석처리한부분 코드 수정하기
 ipcMain.on('on_off', (event, arg) =>{
   console.log('on_off');
@@ -1285,7 +1318,7 @@ ipcMain.on('on_off', (event, arg) =>{
   }
   // PC설정값과 통신설정값이 일치하지 않아서 연결이 안되었거나
   // 유저가 프로그램을 종료했다가 다시 켜는 경우
-  if(!sp.isOpen) {
+  if(scale.displayMsg == '-----' || scale.displayMsg == 'off') {
     openPort();
     return;
   }
