@@ -1,6 +1,6 @@
 const { ipcRenderer } = require('electron')
 const remote = require('electron').remote;
-const { FIVE_HUNDRED_MS } = require('./constant');
+const { FIVE_HUNDRED_MS } = require('../util/constant');
 
 // 외부 출력
 const printConditionRadios1 = document.getElementById("printConditionRadios1");

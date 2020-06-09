@@ -1,8 +1,8 @@
 const { BrowserWindow, ipcRenderer } = require('electron')
 const remote = require('electron').remote;
 const Store = require('electron-store');
-const { PARITY_NONE, PARITY_ODD, PARITY_EVEN, CRLF, CR } = require('./constant');
-const { uartFlag } = require('./flag');
+const { PARITY_NONE, PARITY_ODD, PARITY_EVEN, CRLF, CR } = require('../util/constant');
+const { uartFlag } = require('../util/flag');
 
 const pcConfigOkButton = document.getElementById("pcConfigOk");
 pcConfigOkButton.addEventListener('click', function(){

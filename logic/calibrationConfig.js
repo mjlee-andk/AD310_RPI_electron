@@ -1,6 +1,6 @@
 const { ipcRenderer } = require('electron')
 const remote = require('electron').remote;
-const { FIVE_HUNDRED_MS } = require('./constant');
+const { FIVE_HUNDRED_MS } = require('../util/constant');
 
 // 교정 설정
 const capaText = document.getElementById("capaText");

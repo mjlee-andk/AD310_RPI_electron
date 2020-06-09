@@ -1,6 +1,6 @@
 const { ipcRenderer } = require('electron')
 const remote = require('electron').remote;
-const { FIVE_HUNDRED_MS } = require('./constant');
+const { FIVE_HUNDRED_MS } = require('../util/constant');
 
 // 기본 설정 좌
 const digitalFilterSelect = document.getElementById("digitalFilterSelect");

@@ -1,7 +1,7 @@
 const { ipcRenderer } = require('electron')
 const remote = require('electron').remote;
-const { FIVE_HUNDRED_MS } = require('./constant');
-const { uartFlag } = require('./flag');
+const { FIVE_HUNDRED_MS } = require('../util/constant');
+const { uartFlag } = require('../util/flag');
 
 
 // 통신 설정

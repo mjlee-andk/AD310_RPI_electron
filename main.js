@@ -2,9 +2,9 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
 
-const { FIVE_HUNDRED_MS, PARITY_NONE, PARITY_ODD, PARITY_EVEN, CRLF, DEFAULT_SERIAL_PORT_WINDOW, DEFAULT_SERIAL_PORT_LINUX } = require('./constant');
+const { FIVE_HUNDRED_MS, PARITY_NONE, PARITY_ODD, PARITY_EVEN, CRLF, DEFAULT_SERIAL_PORT_WINDOW, DEFAULT_SERIAL_PORT_LINUX } = require('./util/constant');
+const { scaleFlag, uartFlag, basicConfigFlag, externalPrintConfigFlag, calibrationConfigFlag } = require('./util/flag');
 const Store = require('electron-store');
-const { scaleFlag, uartFlag, basicConfigFlag, externalPrintConfigFlag, calibrationConfigFlag } = require('./flag');
 
 const os = require('os');
 const platforms = {
@@ -72,7 +72,7 @@ const openConfigWindow = function() {
   })
 
 
-  configWin.loadFile('config.html');
+  configWin.loadFile('view/config.html');
   configWin.webContents.openDevTools();
 
   configWin.webContents.on('did-finish-load', () => {
@@ -124,7 +124,7 @@ const openPCConfigWindow = function() {
     // fullscreen: true
   })
 
-  pcConfigWin.loadFile('pcconfig.html');
+  pcConfigWin.loadFile('view/pcconfig.html');
   pcConfigWin.webContents.openDevTools();
 
   getPcConfigLocalStorage();

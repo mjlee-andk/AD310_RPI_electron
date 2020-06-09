@@ -1,6 +1,6 @@
 const { ipcRenderer } = require('electron')
 const remote = require('electron').remote;
-const { TAB_SERIAL_CONFIG, TAB_BASIC_LEFT_CONFIG, TAB_BASIC_RIGHT_CONFIG, TAB_EXTERNAL_PRINT_CONFIG, TAB_CALIBRATION_CONFIG, TAB_CALIBRATION, TAB_INIT } = require('./constant');
+const { TAB_SERIAL_CONFIG, TAB_BASIC_LEFT_CONFIG, TAB_BASIC_RIGHT_CONFIG, TAB_EXTERNAL_PRINT_CONFIG, TAB_CALIBRATION_CONFIG, TAB_CALIBRATION, TAB_INIT } = require('../util/constant');
 const { setSerialConfigData } = require('./serialConfig');
 const { setBasicLeftConfigData, setBasicRightConfigData } = require('./basicConfig');
 const { setExternalPrintConfigData } = require('./externalPrintConfig');
