@@ -1430,7 +1430,7 @@ ipcMain.on('on_off', (event, arg) => {
           });
         }
         else {
-          setStreamMode();
+          // setStreamMode();
         }
       }, 2000);
     }
@@ -1440,6 +1440,7 @@ ipcMain.on('on_off', (event, arg) => {
       win.webContents.send('on_off', 'ON');
       if(sp != undefined) {
         sp.close(function(err){
+          setStreamMode();
           if(err) {
             console.log(err.message)
             return;

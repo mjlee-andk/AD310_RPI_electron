@@ -159,16 +159,20 @@ const setSerialConfigData = function() {
 const digitalFilterSelect = document.getElementById("digitalFilterSelect");
 const holdModeSelect = document.getElementById("holdModeSelect");
 const averageTimeSlider = document.getElementById('averageTimeSlider');
+const averageTimeSliderValue = document.getElementById('averageTimeSliderValue');
 
 noUiSlider.create(averageTimeSlider, {
     start: [0],
     step: 0.1,
     connect: 'upper',
-    tooltips: true,
     range: {
         'min': [0],
         'max': [9.9]
     }
+});
+
+averageTimeSlider.noUiSlider.on('update', function(values, handle){
+  averageTimeSliderValue.innerHTML = values[handle];
 });
 
 ipcRenderer.on('get_basic_left_config_data', (event, data) => {
@@ -204,41 +208,56 @@ const setBasicLeftConfigData = function() {
 
 // 기본 설정 우
 const zeroRangeSlider = document.getElementById("zeroRangeSlider");
+const zeroRangeSliderValue = document.getElementById("zeroRangeSliderValue");
+
 const zeroTrackingTimeSlider = document.getElementById("zeroTrackingTimeSlider");
+const zeroTrackingTimeSliderValue = document.getElementById("zeroTrackingTimeSliderValue");
+
 const zeroTrackingWidthSlider = document.getElementById('zeroTrackingWidthSlider');
+const zeroTrackingWidthSliderValue = document.getElementById("zeroTrackingWidthSliderValue");
+
 const powerOnZeroToggle = document.getElementById('powerOnZeroToggle');
 
 noUiSlider.create(zeroRangeSlider, {
     start: [0],
     step: 1,
     connect: 'upper',
-    tooltips: true,
     range: {
         'min': [0],
         'max': [100]
     }
 });
 
+zeroRangeSlider.noUiSlider.on('update', function(values, handle){
+  zeroRangeSliderValue.innerHTML = values[handle];
+});
+
 noUiSlider.create(zeroTrackingTimeSlider, {
     start: [0],
     step: 0.1,
     connect: 'upper',
-    tooltips: true,
     range: {
         'min': [0],
         'max': [5]
     }
 });
 
+zeroTrackingTimeSlider.noUiSlider.on('update', function(values, handle){
+  zeroTrackingTimeSliderValue.innerHTML = values[handle];
+});
+
 noUiSlider.create(zeroTrackingWidthSlider, {
     start: [0],
     step: 0.1,
     connect: 'upper',
-    tooltips: true,
     range: {
         'min': [0],
         'max': [9.9]
     }
+});
+
+zeroTrackingWidthSlider.noUiSlider.on('update', function(values, handle){
+  zeroTrackingWidthSliderValue.innerHTML = values[handle];
 });
 
 ipcRenderer.on('get_basic_right_config_data', (event, data) => {
