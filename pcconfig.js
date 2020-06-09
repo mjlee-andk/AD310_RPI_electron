@@ -1,6 +1,8 @@
 const { BrowserWindow, ipcRenderer } = require('electron')
 const remote = require('electron').remote;
 
+const Store = require('electron-store');
+
 const CONSTANT = require('./constant');
 
 class uartFlag{
@@ -16,7 +18,7 @@ class uartFlag{
 
 const pcConfigOkButton = document.getElementById("pcConfigOk");
 pcConfigOkButton.addEventListener('click', function(){
-  tmpfunc();
+  setPcConfig();
 
   var window = remote.getCurrentWindow();
   window.close();
@@ -43,7 +45,7 @@ const terminatorRadios2 = document.getElementById("terminatorRadios2");
 // PC설정 화면 시작시 데이터 받아오기
 ipcRenderer.on('get_pc_config_data', (event, data) => {
   console.log('get_pc_config_data');
-  console.log(data);
+
   portSelect.value = data.port;
   baudrateSelect.value = data.baudrate;
   if(data.databits == 7) {
@@ -88,8 +90,8 @@ ipcRenderer.on('port_list', (event, data) => {
 });
 
 // pc config에서 설정한 값들 보내기
-var tmpfunc = function() {
-  var pcConfigNow = new uartFlag('COM1', 24, 7, CONSTANT.PARITY_EVEN, 1, CONSTANT.CRLF);
+var setPcConfig = function() {
+  var pcConfigNow = new uartFlag('COM1', 24, 8, CONSTANT.PARITY_NONE, 1, CONSTANT.CRLF);
 
   pcConfigNow.port = portSelect.options[portSelect.selectedIndex].value;
   pcConfigNow.baudrate = baudrateSelect.options[baudrateSelect.selectedIndex].value;
@@ -125,8 +127,15 @@ var tmpfunc = function() {
     pcConfigNow.terminator = terminatorRadios2.value;
   }
 
+  const localStorage = new Store();
+
+  localStorage.set('pc_config.port', pcConfigNow.port);
+  localStorage.set('pc_config.baudrate', pcConfigNow.baudrate);
+  localStorage.set('pc_config.databits', pcConfigNow.databits);
+  localStorage.set('pc_config.parity', pcConfigNow.parity);
+  localStorage.set('pc_config.stopbits', pcConfigNow.stopbits);
+  localStorage.set('pc_config.terminator', pcConfigNow.terminator);
+
   ipcRenderer.send('set_pc_config_data', pcConfigNow);
   return;
 }
-
-// PC 설정 변경 후 설정값 보내기

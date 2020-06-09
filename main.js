@@ -5,6 +5,27 @@ const Readline = require('@serialport/parser-readline')
 const path = require('path');
 
 const CONSTANT = require('./constant');
+const Store = require('electron-store');
+
+const os = require('os');
+const platforms = {
+  WINDOWS: 'WINDOWS',
+  MAC: 'MAC',
+  LINUX: 'LINUX',
+  SUN: 'SUN',
+  OPENBSD: 'OPENBSD',
+  ANDROID: 'ANDROID',
+  AIX: 'AIX'
+};
+const platformsNames = {
+  win32: platforms.WINDOWS,
+  darwin: platforms.MAC,
+  linux: platforms.LINUX,
+  sunos: platforms.SUN,
+  openbsd: platforms.OPENBSD,
+  android: platforms.ANDROID,
+  aix: platforms.AIX,
+};
 
 class scaleFlag {
   constructor() {
@@ -116,8 +137,9 @@ var serialConfig = new uartFlag();
 var basicConfig = new basicConfigFlag();
 var externalPrintConfig = new externalPrintConfigFlag();
 var calibrationConfig = new calibrationConfigFlag();
+var currentPlatform;
 
-var createWindow = function() {
+const createWindow = function() {
   // 브라우저 창을 생성합니다.
   win = new BrowserWindow({
     width: 757,
@@ -130,9 +152,13 @@ var createWindow = function() {
   })
   win.loadFile('index.html');
   win.webContents.openDevTools();
+
+  currentPlatform = platformsNames[os.platform()];
+
+  console.log(currentPlatform);
 }
 
-var openConfigWindow = function() {
+const openConfigWindow = function() {
   // 브라우저 창을 생성합니다.
   configWin = new BrowserWindow({
     parent: win,
@@ -157,7 +183,35 @@ var openConfigWindow = function() {
   })
 }
 
-var openPCConfigWindow = function() {
+const getPcConfigLocalStorage = function() {
+  const localStorage = new Store();
+
+  if(localStorage.get('pc_config') == undefined) {
+    if(currentPlatform == 'WINDOWS') {
+      localStorage.set('pc_config.port', 'COM1');
+    }
+    else {
+      localStorage.set('pc_config.port', '');
+    }
+
+    localStorage.set('pc_config.baudrate', 24);
+    localStorage.set('pc_config.databits', 8);
+    localStorage.set('pc_config.parity', CONSTANT.PARITY_NONE);
+    localStorage.set('pc_config.stopbits', 1);
+    localStorage.set('pc_config.terminator', CONSTANT.CRLF);
+  }
+  else {
+    var tmpConfig = localStorage.get('pc_config');
+    pcConfig.port = tmpConfig.port;
+    pcConfig.baudrate = tmpConfig.baudrate;
+    pcConfig.databits = tmpConfig.databits;
+    pcConfig.parity = tmpConfig.parity;
+    pcConfig.stopbits = tmpConfig.stopbits;
+    pcConfig.terminator = tmpConfig.terminator;
+  }
+}
+
+const openPCConfigWindow = function() {
   // 브라우저 창을 생성합니다.
   pcConfigWin = new BrowserWindow({
     parent: win,
@@ -173,6 +227,8 @@ var openPCConfigWindow = function() {
   pcConfigWin.loadFile('pcconfig.html');
   pcConfigWin.webContents.openDevTools();
 
+  getPcConfigLocalStorage();
+
   // PC설정 화면 로드 완료되면 포트 목록 호출 및 PC설정 데이터 전송
   pcConfigWin.webContents.on('did-finish-load', () => {
     // 포트목록 불러오기
@@ -185,7 +241,7 @@ var openPCConfigWindow = function() {
   })
 }
 
-var setStreamMode = function() {
+const setStreamMode = function() {
   console.log('set stream mode');
   const command = 'F206,1' + '\r\n';
   sp.write(command, function(err){
@@ -196,7 +252,7 @@ var setStreamMode = function() {
   });
 }
 
-var setCommandMode = function() {
+const setCommandMode = function() {
   console.log('set command mode');
   const command = 'F206,2' + '\r\n';
   sp.write(command, function(err){
@@ -208,7 +264,7 @@ var setCommandMode = function() {
   });
 }
 
-var rssetCommand = function() {
+const rssetCommand = function() {
   var command = 'RSSET' + '\r\n';
 
   scale.f = true;
@@ -556,69 +612,6 @@ const makeFormat = function(data) {
 
    return result;
 }
-
-ipcMain.on('open_pc_config_window', (event, arg) =>{
-  console.log('open_pc_config_window');
-  openPCConfigWindow();
-})
-
-ipcMain.on('open_config_window', (event, arg) =>{
-  console.log('open_config_window');
-  setCommandMode();
-})
-
-ipcMain.on('set_pc_config_data', (event, data) => {
-  console.log('set_pc_config_data');
-  pcConfig = data;
-})
-
-ipcMain.on('set_serial_config_data', (event, data) => {
-  console.log('set_serial_config_data');
-
-  serialConfig = data;
-  setSerialConfig(data);
-})
-
-ipcMain.on('set_basic_left_config_data', (event, data) => {
-  console.log('set_basic_left_config_data');
-
-  setBasicLeftConfig(data);
-})
-
-ipcMain.on('set_basic_right_config_data', (event, data) => {
-  console.log('set_basic_right_config_data');
-
-  setBasicRightConfig(data);
-})
-
-ipcMain.on('set_external_print_config_data', (event, data) => {
-  console.log('set_external_print_config_data');
-
-  setExternalPrintConfig(data);
-})
-
-ipcMain.on('set_calibration_config_data', (event, data) => {
-  console.log('set_calibration_config_data');
-
-  setCalibrationConfig(data);
-})
-
-ipcMain.on('set_cal_zero', (event, data) => {
-  console.log('set_cal_zero');
-
-  setCalZero();
-})
-
-ipcMain.on('set_cal_span', (event, data) => {
-  console.log('set_cal_span');
-
-  setCalSpan();
-})
-
-ipcMain.on('set_span_value_data', (event, data) => {
-  console.log('set_span_value_data');
-  setSpanValue(data);
-})
 
 const getRomVer = function() {
   console.log('get_device_rom_ver');
@@ -1142,6 +1135,161 @@ const getCal = function() {
   })
 }
 
+const initFunctionF = function() {
+  var command = 'INF' + '\r\n';
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      return;
+    }
+  });
+}
+
+const initConfig = function() {
+  var command = 'INC' + '\r\n';
+  sp.write(command, function(err){
+    if(err) {
+      console.log(err.message)
+      return;
+    }
+  });
+}
+
+const openPort = function() {
+  try {
+    var parity = 'none';
+    if(pcConfig.parity == CONSTANT.ODD) {
+      parity = 'odd';
+    }
+    else if(pcConfig.parity == CONSTANT.EVEN) {
+      parity = 'even';
+    }
+    sp = new SerialPort(pcConfig.port, {
+      baudRate: pcConfig.baudrate * 100,
+      dataBits: Number(pcConfig.databits),
+      parity: parity,
+      stopBits: Number(pcConfig.stopbits)
+    });
+
+    return sp;
+
+    // // 3초 타이머 스타트
+    // var secondTimer = setInterval(function(){
+    //   scale.waiting_sec += 1;
+    //   console.log(scale.waiting_sec);
+    // }, 500);
+    //
+    // setTimeout(function(){
+    //   if(scale.waiting_sec >= 1) {
+    //     scale.waiting_sec = 0;
+    //     scale.displayMsg = '-----';
+    //     // 연결 안 된 상태
+    //     // clearInterval(secondTimer);
+    //     win.webContents.send('rx_data', scale);
+    //
+    //     sp.close(function(err){
+    //       if(err) {
+    //         console.log(err.message)
+    //         return;
+    //       }
+    //       console.log('closed');
+    //     });
+    //
+    //     return;
+    //   }
+    // }, 1000);
+    //
+    // const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CONSTANT.CRLF ? '\r\n' : '\r' }));
+    // lineStream.on('data', function(rx) {
+    //   // 타이머 리셋
+    //   clearInterval(secondTimer);
+    //   readHeader(rx);
+    //   win.webContents.send('rx_data', scale);
+    //   win.webContents.send('on_off', 'OFF');
+    // });
+
+    // setTimeout(function() {
+    //   if(scale.displayMsg == '-----' || scale.displayMsg == 'off') {
+    //     return;
+    //   }
+    //   win.webContents.send('on_off', 'OFF');
+    // },500)
+
+
+  }
+  catch(e) {
+    console.log(e);
+    console.log('Cannot open port.');
+  }
+};
+
+const changeMainButtonActive = function(isActive) {
+  win.webContents.send('main_button_active', isActive);
+}
+
+ipcMain.on('open_pc_config_window', (event, arg) =>{
+  console.log('open_pc_config_window');
+  openPCConfigWindow();
+})
+
+ipcMain.on('open_config_window', (event, arg) =>{
+  console.log('open_config_window');
+  setCommandMode();
+})
+
+ipcMain.on('set_pc_config_data', (event, data) => {
+  console.log('set_pc_config_data');
+  pcConfig = data;
+})
+
+ipcMain.on('set_serial_config_data', (event, data) => {
+  console.log('set_serial_config_data');
+
+  serialConfig = data;
+  setSerialConfig(data);
+})
+
+ipcMain.on('set_basic_left_config_data', (event, data) => {
+  console.log('set_basic_left_config_data');
+
+  setBasicLeftConfig(data);
+})
+
+ipcMain.on('set_basic_right_config_data', (event, data) => {
+  console.log('set_basic_right_config_data');
+
+  setBasicRightConfig(data);
+})
+
+ipcMain.on('set_external_print_config_data', (event, data) => {
+  console.log('set_external_print_config_data');
+
+  setExternalPrintConfig(data);
+})
+
+ipcMain.on('set_calibration_config_data', (event, data) => {
+  console.log('set_calibration_config_data');
+
+  setCalibrationConfig(data);
+})
+
+ipcMain.on('set_cal_zero', (event, data) => {
+  console.log('set_cal_zero');
+
+  setCalZero();
+})
+
+ipcMain.on('set_cal_span', (event, data) => {
+  console.log('set_cal_span');
+
+  setCalSpan();
+})
+
+ipcMain.on('set_span_value_data', (event, data) => {
+  console.log('set_span_value_data');
+  setSpanValue(data);
+})
+
 ipcMain.on('set_stream_mode', (event, data) => {
   console.log('set_stream_mode');
   if(sp == undefined) {
@@ -1180,31 +1328,11 @@ ipcMain.on('init_function_f', (event, arg) => {
   initFunctionF();
 })
 
-const initFunctionF = function() {
-  var command = 'INF' + '\r\n';
-  sp.write(command, function(err){
-    if(err) {
-      console.log(err.message)
-      return;
-    }
-  });
-}
-
 ipcMain.on('init_config', (event, arg) => {
   console.log('init_config');
 
   initConfig();
 })
-
-const initConfig = function() {
-  var command = 'INC' + '\r\n';
-  sp.write(command, function(err){
-    if(err) {
-      console.log(err.message)
-      return;
-    }
-  });
-}
 
 ipcMain.on('set_clear_tare', (event, arg) =>{
   console.log('set_clear_tare');
@@ -1265,108 +1393,74 @@ ipcMain.on('print', (event, arg) => {
   return;
 })
 
-const openPort = function() {
-  try {
-    var parity = 'none';
-    if(pcConfig.parity == CONSTANT.ODD) {
-      parity = 'odd';
-    }
-    else if(pcConfig.parity == CONSTANT.EVEN) {
-      parity = 'even';
-    }
-    sp = new SerialPort(pcConfig.port, {
-      baudRate: pcConfig.baudrate * 100,
-      dataBits: Number(pcConfig.databits),
-      parity: parity,
-      stopBits: Number(pcConfig.stopbits)
-    });
-
-    // 3초 타이머 스타트
-    const secondTimer = setInterval(function(){
-      scale.waiting_sec += 1;
-      console.log(scale.waiting_sec);
-    }, 1000);
-
-    setTimeout(function(){
-      if(scale.waiting_sec >= 3) {
-        console.log('568');
-        scale.waiting_sec = 0;
-        scale.displayMsg = '-----';
-        // 연결 안 된 상태
-        clearInterval(secondTimer);
-        win.webContents.send('rx_data', scale);
-
-        return;
-      }
-    }, 4000);
-
-    const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CONSTANT.CRLF ? '\r\n' : '\r' }));
-    lineStream.on('data', function(rx) {
-      // 타이머 리셋
-      clearInterval(secondTimer);
-      readHeader(rx);
-      win.webContents.send('rx_data', scale);
-    });
-
-    setTimeout(function() {
-      if(scale.displayMsg == '-----' || scale.displayMsg == 'off') {
-        return;
-      }
-      console.log('dqfw');
-      win.webContents.send('on_off', 'OFF');
-    },400)
-
-
-  }
-  catch(e) {
-    console.log(e);
-    console.log('Cannot open port.');
-  }
-};
-
-// TODO 주석처리한부분 코드 수정하기
-ipcMain.on('on_off', (event, arg) =>{
+ipcMain.on('on_off', (event, arg) => {
   console.log('on_off');
-
-  // 최초 실행시
-  if(sp == undefined) {
-    openPort();
-    return;
-  }
-  // PC설정값과 통신설정값이 일치하지 않아서 연결이 안되었거나
-  // 유저가 프로그램을 종료했다가 다시 켜는 경우
-  if(scale.displayMsg == '-----' || scale.displayMsg == 'off') {
-    openPort();
-    return;
-  }
-
-  // 프로그램 종료
   try {
-    // 스트림 모드로 설정
-    // 디스플레이 타이머 멈추기
-    // 대기시간 타이머 멈추기
-    sp.close(function(err){
-      if(err) {
-        console.log(err.message)
-        return;
+    var isOpen = false;
+
+    // 프로그램 시작
+    if(arg == 'ON') {
+      getPcConfigLocalStorage();
+
+      win.webContents.send('on_off', 'OFF');
+      sp = openPort();
+
+      scale.displayMsg = 'conn';
+      win.webContents.send('rx_data', scale);
+
+      const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CONSTANT.CRLF ? '\r\n' : '\r' }));
+      lineStream.on('data', function(rx) {
+        readHeader(rx);
+        win.webContents.send('rx_data', scale);
+        isOpen = true;
+        changeMainButtonActive(isOpen);
+      });
+
+      setTimeout(function(){
+        if(!isOpen) {
+          changeMainButtonActive(isOpen);
+          scale.displayMsg = '-----';
+          win.webContents.send('rx_data', scale);
+          sp.close(function(err){
+            if(err) {
+              console.log(err.message)
+              return;
+            }
+            console.log('closed');
+          });
+        }
+        else {
+          setStreamMode();
+        }
+      }, 2000);
+    }
+
+    // 프로그램 종료
+    else {
+      win.webContents.send('on_off', 'ON');
+      if(sp != undefined) {
+        sp.close(function(err){
+          if(err) {
+            console.log(err.message)
+            return;
+          }
+          console.log('closed');
+        });
       }
-      console.log('closed');
-    });
-    // 버튼 ON 표시
-    win.webContents.send('on_off', 'ON');
+      // 디스플레이부 OFF 표시
+      scale.displayMsg = 'off';
+      // 상태표시 라벨 초기화
+      scale.isStable = false;
+      scale.isZero = false;
+      scale.isNet = false;
+      scale.isHold = false;
+      scale.isHg = false;
 
-    // 디스플레이부 OFF 표시
-    scale.displayMsg = 'off';
-    // 상태표시 라벨 초기화
-    scale.isStable = false;
-    scale.isZero = false;
-    scale.isNet = false;
-    scale.isHold = false;
-    scale.isHg = false;
+      scale.unit = 0;
 
-    scale.unit = 0;
-
-    win.webContents.send('rx_data', scale);
+      win.webContents.send('rx_data', scale);
+      changeMainButtonActive(false);
+    }
   }
   catch(e) {
     console.log(e);

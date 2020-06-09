@@ -106,8 +106,35 @@ const onOffButton = document.getElementById("onOff");
 ipcRenderer.on('on_off', (event, message) => {
   onOffButton.innerHTML = message
 
+  // // 프로그램 OFF 상태
+  // if(message == 'ON') {
+  //   setClearTareButton.disabled = true;
+  //   setZeroTareButton.disabled = true;
+  //   setGrossNetButton.disabled = true;
+  //   setHoldButton.disabled = true;
+  //   printButton.disabled = true;
+  //   openPCConfigWindowButton.disabled = false;
+  //   openConfigWindowButton.disabled = true;
+  // }
+  // // 프로그램 ON 상태
+  // else {
+  //   setClearTareButton.disabled = false;
+  //   setZeroTareButton.disabled = false;
+  //   setGrossNetButton.disabled = false;
+  //   setHoldButton.disabled = false;
+  //   printButton.disabled = false;
+  //   openPCConfigWindowButton.disabled = true;
+  //   openConfigWindowButton.disabled = false;
+  // }
+});
+
+ipcRenderer.on('print', (event, data) => {
+
+});
+
+ipcRenderer.on('main_button_active', (event, isActive) => {
   // 프로그램 OFF 상태
-  if(message == 'ON') {
+  if(!isActive) {
     setClearTareButton.disabled = true;
     setZeroTareButton.disabled = true;
     setGrossNetButton.disabled = true;
@@ -126,11 +153,7 @@ ipcRenderer.on('on_off', (event, message) => {
     openPCConfigWindowButton.disabled = true;
     openConfigWindowButton.disabled = false;
   }
-});
-
-ipcRenderer.on('print', (event, data) => {
-
-});
+})
 
 
 setClearTareButton.addEventListener('click', function(){
@@ -160,5 +183,5 @@ printButton.addEventListener('click', function(){
 
 onOffButton.addEventListener('click', function(){
   onOffButton.blur();
-  ipcRenderer.send('on_off', 'ok');
+  ipcRenderer.send('on_off', onOffButton.innerHTML);
 })
