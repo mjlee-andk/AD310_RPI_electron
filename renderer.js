@@ -1,4 +1,4 @@
-const { BrowserWindow, ipcRenderer } = require('electron')
+const { ipcRenderer } = require('electron')
 const remote = require('electron').remote;
 
 // 메인 화면 상단 버튼

@@ -1,20 +1,8 @@
 const { BrowserWindow, ipcRenderer } = require('electron')
 const remote = require('electron').remote;
-
 const Store = require('electron-store');
-
-const CONSTANT = require('./constant');
-
-class uartFlag{
-  constructor(port, baudrate, databits, parity, stopbits, terminator) {
-    this.port = port;
-    this.baudrate = baudrate;
-    this.databits = databits;
-    this.parity = parity;
-    this.stopbits = stopbits;
-    this.terminator = terminator;
-  }
-}
+const { PARITY_NONE, PARITY_ODD, PARITY_EVEN, CRLF, CR } = require('./constant');
+const { uartFlag } = require('./flag');
 
 const pcConfigOkButton = document.getElementById("pcConfigOk");
 pcConfigOkButton.addEventListener('click', function(){
@@ -54,13 +42,13 @@ ipcRenderer.on('get_pc_config_data', (event, data) => {
   else if(data.databits == 8) {
     dataBitsRadios2.checked = true;
   }
-  if(data.parity == CONSTANT.PARITY_NONE) {
+  if(data.parity == PARITY_NONE) {
     parityRadios1.checked = true;
   }
-  else if(data.parity == CONSTANT.PARITY_ODD) {
+  else if(data.parity == PARITY_ODD) {
     parityRadios2.checked = true;
   }
-  else if(data.parity == CONSTANT.PARITY_EVEN) {
+  else if(data.parity == PARITY_EVEN) {
     parityRadios3.checked = true;
   }
   if(data.stopbits == 1) {
@@ -69,10 +57,10 @@ ipcRenderer.on('get_pc_config_data', (event, data) => {
   else if(data.stopbits == 2) {
     stopbitsRadios2.checked = true;
   }
-  if(data.terminator == CONSTANT.CRLF) {
+  if(data.terminator == CRLF) {
     terminatorRadios1.checked = true;
   }
-  else if(data.terminator == CONSTANT.CR) {
+  else if(data.terminator == CR) {
     terminatorRadios2.checked = true;
   }
 });
@@ -91,7 +79,7 @@ ipcRenderer.on('port_list', (event, data) => {
 
 // pc config에서 설정한 값들 보내기
 var setPcConfig = function() {
-  var pcConfigNow = new uartFlag('COM1', 24, 8, CONSTANT.PARITY_NONE, 1, CONSTANT.CRLF);
+  var pcConfigNow = new uartFlag('COM1', 24, 8, PARITY_NONE, 1, CRLF);
 
   pcConfigNow.port = portSelect.options[portSelect.selectedIndex].value;
   pcConfigNow.baudrate = baudrateSelect.options[baudrateSelect.selectedIndex].value;

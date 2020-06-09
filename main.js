@@ -1,11 +1,10 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
-
 const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
-const path = require('path');
 
-const CONSTANT = require('./constant');
+const { FIVE_HUNDRED_MS, PARITY_NONE, PARITY_ODD, PARITY_EVEN, CRLF, DEFAULT_SERIAL_PORT_WINDOW, DEFAULT_SERIAL_PORT_LINUX } = require('./constant');
 const Store = require('electron-store');
+const { scaleFlag, uartFlag, basicConfigFlag, externalPrintConfigFlag, calibrationConfigFlag } = require('./flag');
 
 const os = require('os');
 const platforms = {
@@ -27,112 +26,13 @@ const platformsNames = {
   aix: platforms.AIX,
 };
 
-class scaleFlag {
-  constructor() {
-    // 상태 표시
-    this.isStable = false;
-    this.isZero = false;
-    this.isNet = false;
-    this.isHold = false;
-    this.isHg = false;
-
-    // 표시 데이터
-    this.displayMsg = 'off';
-
-    this.f = false
-    this.cf = false
-    this.array_index_f = 0
-    this.array_index_cf = 0
-    this.read = false
-    this.write = false
-    this.hi = 0
-    this.lo = 0
-    this.terminator = 'CRLF'  // CRLF
-    this.block = false
-
-    // 단위 표시
-    this.unit = 0
-
-    // 스팬 적용
-    this.do_span = false
-
-    // init F 모드
-    this.mode_init_f = false
-
-    // init All 모드
-    this.mode_init_a = false
-
-    // init 응답 플래그
-    this.init_f = false
-
-    // 100ms 카운터
-    this.cnt_100ms = 0
-
-    // 초기화 루틴 진입
-    this.do_init = false
-
-    // 대기 시간
-    this.waiting_sec = 0
-  }
-}
-
-class uartFlag{
-  constructor(port, baudrate, databits, parity, stopbits, terminator) {
-    this.port = port;
-    this.baudrate = baudrate;
-    this.databits = databits;
-    this.parity = parity;
-    this.stopbits = stopbits;
-    this.terminator = terminator;
-  }
-}
-
-class basicConfigFlag{
-  constructor() {
-    // 커맨드로 정보 읽어오는건지 아닌지 확인
-    this.isRead = true;
-
-    // 기본설정 좌
-    this.digitalFilter = 0, // 디지털 필터
-    this.holdMode = 0, // 홀드모드
-    this.averageTime = 0, // 평균화시간
-    // 기본설정 우
-    this.zeroRange = 2, // 제로범위
-    this.zeroTrackingTime = 0, // 영점트래킹시간
-    this.zeroTrackingWidth = 0, // 영점트래킹폭
-    this.powerOnZero = 0 // 파워온제로
-  }
-}
-
-class externalPrintConfigFlag{
-  constructor() {
-    this.isRead = true,
-
-    this.printCondition = 0,
-    this.configValue = 0,
-    this.comparatorMode = 2,
-    this.nearZero = 0
-  }
-}
-
-class calibrationConfigFlag {
-  constructor() {
-    this.isRead = true,
-
-    this.capa = 10000, // 최대용량
-    this.div = 1, // 최소눈금
-    this.decimalPoint = 0, // 소수점 위치
-    this.unit = 2, // 단위
-    this.spanValue = 10000 //  스팬의 입력 전압에 관한 표시값
-  }
-}
-
 var sp;
 var win;
 var configWin;
 var pcConfigWin;
 var scale = new scaleFlag();
-var pcConfig = new uartFlag('COM1', 24, 8, CONSTANT.PARITY_NONE, 1, CONSTANT.CRLF);
+// var pcConfig = new uartFlag('COM1', 24, 8, PARITY_NONE, 1, CRLF);
+var pcConfig = new uartFlag();
 var serialConfig = new uartFlag();
 var basicConfig = new basicConfigFlag();
 var externalPrintConfig = new externalPrintConfigFlag();
@@ -179,7 +79,7 @@ const openConfigWindow = function() {
     setTimeout(function() {
       getSerialConfig();
       getRomVer();
-    }, CONSTANT.FIVE_HUNDRED_MS);
+    }, FIVE_HUNDRED_MS);
   })
 }
 
@@ -188,17 +88,17 @@ const getPcConfigLocalStorage = function() {
 
   if(localStorage.get('pc_config') == undefined) {
     if(currentPlatform == 'WINDOWS') {
-      localStorage.set('pc_config.port', 'COM1');
+      localStorage.set('pc_config.port', DEFAULT_SERIAL_PORT_WINDOW);
     }
     else {
-      localStorage.set('pc_config.port', '');
+      localStorage.set('pc_config.port', DEFAULT_SERIAL_PORT_LINUX);
     }
 
     localStorage.set('pc_config.baudrate', 24);
     localStorage.set('pc_config.databits', 8);
-    localStorage.set('pc_config.parity', CONSTANT.PARITY_NONE);
+    localStorage.set('pc_config.parity', PARITY_NONE);
     localStorage.set('pc_config.stopbits', 1);
-    localStorage.set('pc_config.terminator', CONSTANT.CRLF);
+    localStorage.set('pc_config.terminator', CRLF);
   }
   else {
     var tmpConfig = localStorage.get('pc_config');
@@ -293,7 +193,7 @@ const readHeader = function(rx) {
   if(header5bit == 'INFOK' || header5bit == 'INCOK') {
     // 초기화 된 설정값으로 변경 후 재연결
     const currentPort = pcConfig.port;
-    pcConfig = new uartFlag(currentPort, 24, 8, CONSTANT.PARITY_NONE, 1, CONSTANT.CRLF);
+    pcConfig = new uartFlag(currentPort, 24, 8, PARITY_NONE, 1, CRLF);
     sp.close(function(err){
       if(err) {
         console.log(err.message)
@@ -409,6 +309,14 @@ const readHeader = function(rx) {
 
       if(header5bit == 'SETOK') {
         console.log('SETOK');
+
+        const localStorage = new Store();
+
+        localStorage.set('pc_config.baudrate', serialConfig.baudrate);
+        localStorage.set('pc_config.databits', serialConfig.databits);
+        localStorage.set('pc_config.parity', serialConfig.parity);
+        localStorage.set('pc_config.stopbits', serialConfig.stopbits);
+        localStorage.set('pc_config.terminator', serialConfig.terminator);
 
         pcConfig.baudrate = serialConfig.baudrate;
         pcConfig.databits = serialConfig.databits;
@@ -627,7 +535,7 @@ const getRomVer = function() {
 const setSerialConfig = function(data) {
   console.log('set_serial_config');
 
-  console.log('set_device_baudrate');
+  console.log('set_device_serial_data');
   var arg = '';
   if(data.baudrate.length == 2) {
     arg += '0' + data.baudrate;
@@ -742,9 +650,9 @@ const setBasicLeftConfig = function(data) {
               return;
             }
           })
-        }, CONSTANT.FIVE_HUNDRED_MS);
+        }, FIVE_HUNDRED_MS);
       })
-    }, CONSTANT.FIVE_HUNDRED_MS);
+    }, FIVE_HUNDRED_MS);
   })
 }
 
@@ -829,11 +737,11 @@ const setBasicRightConfig = function(data) {
                   return;
                 }
               })
-            }, CONSTANT.FIVE_HUNDRED_MS);
+            }, FIVE_HUNDRED_MS);
           })
-        }, CONSTANT.FIVE_HUNDRED_MS);
+        }, FIVE_HUNDRED_MS);
       })
-    }, CONSTANT.FIVE_HUNDRED_MS);
+    }, FIVE_HUNDRED_MS);
   })
 }
 
@@ -926,11 +834,11 @@ const setExternalPrintConfig = function(data) {
                   return;
                 }
               })
-            }, CONSTANT.FIVE_HUNDRED_MS)
+            }, FIVE_HUNDRED_MS)
           })
-        }, CONSTANT.FIVE_HUNDRED_MS)
+        }, FIVE_HUNDRED_MS)
       })
-    }, CONSTANT.FIVE_HUNDRED_MS)
+    }, FIVE_HUNDRED_MS)
   })
 }
 
@@ -1022,11 +930,11 @@ const setCalibrationConfig = function(data) {
                   return;
                 }
               })
-            }, CONSTANT.FIVE_HUNDRED_MS)
+            }, FIVE_HUNDRED_MS)
           })
-        }, CONSTANT.FIVE_HUNDRED_MS)
+        }, FIVE_HUNDRED_MS)
       })
-    }, CONSTANT.FIVE_HUNDRED_MS)
+    }, FIVE_HUNDRED_MS)
   })
 }
 
@@ -1158,10 +1066,10 @@ const initConfig = function() {
 const openPort = function() {
   try {
     var parity = 'none';
-    if(pcConfig.parity == CONSTANT.ODD) {
+    if(pcConfig.parity == PARITY_ODD) {
       parity = 'odd';
     }
-    else if(pcConfig.parity == CONSTANT.EVEN) {
+    else if(pcConfig.parity == PARITY_EVEN) {
       parity = 'even';
     }
     sp = new SerialPort(pcConfig.port, {
@@ -1172,50 +1080,6 @@ const openPort = function() {
     });
 
     return sp;
-
-    // // 3초 타이머 스타트
-    // var secondTimer = setInterval(function(){
-    //   scale.waiting_sec += 1;
-    //   console.log(scale.waiting_sec);
-    // }, 500);
-    //
-    // setTimeout(function(){
-    //   if(scale.waiting_sec >= 1) {
-    //     scale.waiting_sec = 0;
-    //     scale.displayMsg = '-----';
-    //     // 연결 안 된 상태
-    //     // clearInterval(secondTimer);
-    //     win.webContents.send('rx_data', scale);
-    //
-    //     sp.close(function(err){
-    //       if(err) {
-    //         console.log(err.message)
-    //         return;
-    //       }
-    //       console.log('closed');
-    //     });
-    //
-    //     return;
-    //   }
-    // }, 1000);
-    //
-    // const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CONSTANT.CRLF ? '\r\n' : '\r' }));
-    // lineStream.on('data', function(rx) {
-    //   // 타이머 리셋
-    //   clearInterval(secondTimer);
-    //   readHeader(rx);
-    //   win.webContents.send('rx_data', scale);
-    //   win.webContents.send('on_off', 'OFF');
-    // });
-
-    // setTimeout(function() {
-    //   if(scale.displayMsg == '-----' || scale.displayMsg == 'off') {
-    //     return;
-    //   }
-    //   win.webContents.send('on_off', 'OFF');
-    // },500)
-
-
   }
   catch(e) {
     console.log(e);
@@ -1407,8 +1271,7 @@ ipcMain.on('on_off', (event, arg) => {
 
       scale.displayMsg = 'conn';
       win.webContents.send('rx_data', scale);
-
-      const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CONSTANT.CRLF ? '\r\n' : '\r' }));
+      const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CRLF ? '\r\n' : '\r' }));
       lineStream.on('data', function(rx) {
         readHeader(rx);
         win.webContents.send('rx_data', scale);
