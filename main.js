@@ -93,11 +93,11 @@ const openPCConfigWindow = function() {
       nodeIntegration: true
     },
     frame: false,
-    // fullscreen: true
+    fullscreen: true
   })
 
   pcConfigWin.loadFile('view/pcconfig.html');
-  pcConfigWin.webContents.openDevTools();
+  // pcConfigWin.webContents.openDevTools();
 
   getPcConfigLocalStorage();
 

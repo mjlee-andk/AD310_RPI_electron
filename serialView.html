@@ -1,0 +1,92 @@
+<!--통신설정-->
+<div id="serialDiv" class="row p-3" style="display:flex">
+  <div class="offset-1">
+  </div>
+  <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
+    <div class="bg-primary mt-2">
+        <h1 class="display-4 mb-3">Baudrate</h1>
+        <h1 class="display-4 mb-3">Databits</h1>
+        <h1 class="display-4 mb-3">Parity</h1>
+        <h1 class="display-4 mb-3">Stopbits</h1>
+        <h1 class="display-4">Terminator</h1>
+    </div>
+  </div>
+  <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
+    <div class="bg-primary">
+      <div class="bg-primary mt-1 w-50">
+        <select id="baudrateSelect" class="custom-select mr-sm-2">
+            <option value="24">2400</option>
+            <option value="48">4800</option>
+            <option value="96">9600</option>
+            <option value="192">19200</option>
+            <option value="384">38400</option>
+        </select>
+      </div>
+      <div class="bg-primary mt-3">
+        <fieldset>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="dataBitsRadios" id="dataBitsRadios1" value="7" checked="">
+              <label class="form-check-label" for="dataBitsRadios1">
+                7bits
+              </label>
+
+              <input class="form-check-input" type="radio" name="dataBitsRadios" id="dataBitsRadios2" value="8">
+              <label class="form-check-label" for="dataBitsRadios2">
+                8bits
+              </label>
+            </div>
+        </fieldset>
+      </div>
+      <div class="bg-primary mt-4">
+        <fieldset>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios1" value="0" checked="">
+              <label class="form-check-label" for="parityRadios1">
+                None
+              </label>
+
+              <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios2" value="1">
+              <label class="form-check-label" for="parityRadios2">
+                Odd
+              </label>
+
+              <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios3" value="2">
+              <label class="form-check-label" for="parityRadios3">
+                Even
+              </label>
+            </div>
+        </fieldset>
+      </div>
+      <div class="bg-primary mt-4">
+        <fieldset>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="stopbitsRadios" id="stopbitsRadios1" value="1" checked="">
+              <label class="form-check-label" for="stopbitsRadios1">
+                1bit
+              </label>
+
+              <input class="form-check-input" type="radio" name="stopbitsRadios" id="stopbitsRadios2" value="2">
+              <label class="form-check-label" for="stopbitsRadios2">
+                2bits
+              </label>
+            </div>
+        </fieldset>
+      </div>
+      <div class="bg-primary mt-4">
+        <fieldset>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="terminatorRadios" id="terminatorRadios1" value="1" checked="">
+              <label class="form-check-label" for="terminatorRadios1">
+                CRLF
+              </label>
+
+              <input class="form-check-input" type="radio" name="terminatorRadios" id="terminatorRadios2" value="2">
+              <label class="form-check-label" for="terminatorRadios2">
+                CR
+              </label>
+            </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+</div>

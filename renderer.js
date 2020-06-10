@@ -9,25 +9,33 @@ const closeMainWindowButton = document.getElementById("closeMainWindow");
 
 openPCConfigWindowButton.addEventListener('click', function(){
   console.log('openPCConfigWindowButton');
-  openPCConfigWindowButton.blur();
+  setTimeout(function(){
+    openPCConfigWindowButton.blur();
+  }, 200)
   ipcRenderer.send('open_pc_config_window', 'ok');
 })
 
 openConfigWindowButton.addEventListener('click', function(){
-  openConfigWindowButton.blur();
   console.log('openConfigWindowButton');
+  setTimeout(function(){
+    openConfigWindowButton.blur();
+  }, 200)
   ipcRenderer.send('open_config_window', 'ok');
 })
 
 openInfoWindowButton.addEventListener('click', function(){
-  openInfoWindowButton.blur();
   console.log('openInfoWindowButton');
+  setTimeout(function(){
+    openInfoWindowButton.blur();
+  }, 200)
   ipcRenderer.send('open_info_window', 'ok');
 })
 
 closeMainWindowButton.addEventListener('click', function(){
-  closeMainWindowButton.blur();
   console.log('closeMainWindowButton');
+  setTimeout(function(){
+    closeMainWindowButton.blur();
+  }, 200)
   ipcRenderer.send('set_stream_mode', 'ok');
   var window = remote.getCurrentWindow();
   window.close();
@@ -105,27 +113,6 @@ const onOffButton = document.getElementById("onOff");
 
 ipcRenderer.on('on_off', (event, message) => {
   onOffButton.innerHTML = message
-
-  // // 프로그램 OFF 상태
-  // if(message == 'ON') {
-  //   setClearTareButton.disabled = true;
-  //   setZeroTareButton.disabled = true;
-  //   setGrossNetButton.disabled = true;
-  //   setHoldButton.disabled = true;
-  //   printButton.disabled = true;
-  //   openPCConfigWindowButton.disabled = false;
-  //   openConfigWindowButton.disabled = true;
-  // }
-  // // 프로그램 ON 상태
-  // else {
-  //   setClearTareButton.disabled = false;
-  //   setZeroTareButton.disabled = false;
-  //   setGrossNetButton.disabled = false;
-  //   setHoldButton.disabled = false;
-  //   printButton.disabled = false;
-  //   openPCConfigWindowButton.disabled = true;
-  //   openConfigWindowButton.disabled = false;
-  // }
 });
 
 ipcRenderer.on('print', (event, data) => {
@@ -157,31 +144,44 @@ ipcRenderer.on('main_button_active', (event, isActive) => {
 
 
 setClearTareButton.addEventListener('click', function(){
-  setClearTareButton.blur();
+  setTimeout(function(){
+    setClearTareButton.blur();
+  }, 200)
   ipcRenderer.send('set_clear_tare', 'ok');
 })
 
 setZeroTareButton.addEventListener('click', function(){
-  setZeroTareButton.blur();
+  setTimeout(function(){
+    setZeroTareButton.blur();
+  }, 200)
   ipcRenderer.send('set_zero_tare', 'ok');
 })
 
 setGrossNetButton.addEventListener('click', function(){
-  setGrossNetButton.blur();
+  setTimeout(function(){
+    setGrossNetButton.blur();
+  }, 200)
   ipcRenderer.send('set_gross_net', 'ok');
 })
 
 setHoldButton.addEventListener('click', function(){
-  setHoldButton.blur();
+  setTimeout(function(){
+    setHoldButton.blur();
+  }, 200)
   ipcRenderer.send('set_hold', 'ok');
 })
 
 printButton.addEventListener('click', function(){
-  printButton.blur();
+  setTimeout(function(){
+    printButton.blur();
+  }, 200)
   ipcRenderer.send('print', 'ok');
 })
 
 onOffButton.addEventListener('click', function(){
-  onOffButton.blur();
+  setTimeout(function(){
+    onOffButton.blur();
+  }, 200)
+
   ipcRenderer.send('on_off', onOffButton.innerHTML);
 })

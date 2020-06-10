@@ -19,7 +19,6 @@ const terminatorRadios2 = document.getElementById("terminatorRadios2");
 
 ipcRenderer.on('get_serial_config_data', (event, data) => {
   console.log('get_serial_config_data');
-
   baudrateSelect.value = data.baudrate;
   if(data.databits == 7) {
     dataBitsRadios1.checked = true;
