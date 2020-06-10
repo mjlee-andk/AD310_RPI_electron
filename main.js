@@ -83,34 +83,6 @@ const openConfigWindow = function() {
   })
 }
 
-const getPcConfigLocalStorage = function() {
-  const localStorage = new Store();
-
-  if(localStorage.get('pc_config') == undefined) {
-    if(currentPlatform == 'WINDOWS') {
-      localStorage.set('pc_config.port', DEFAULT_SERIAL_PORT_WINDOW);
-    }
-    else {
-      localStorage.set('pc_config.port', DEFAULT_SERIAL_PORT_LINUX);
-    }
-
-    localStorage.set('pc_config.baudrate', 24);
-    localStorage.set('pc_config.databits', 8);
-    localStorage.set('pc_config.parity', PARITY_NONE);
-    localStorage.set('pc_config.stopbits', 1);
-    localStorage.set('pc_config.terminator', CRLF);
-  }
-  else {
-    var tmpConfig = localStorage.get('pc_config');
-    pcConfig.port = tmpConfig.port;
-    pcConfig.baudrate = tmpConfig.baudrate;
-    pcConfig.databits = tmpConfig.databits;
-    pcConfig.parity = tmpConfig.parity;
-    pcConfig.stopbits = tmpConfig.stopbits;
-    pcConfig.terminator = tmpConfig.terminator;
-  }
-}
-
 const openPCConfigWindow = function() {
   // 브라우저 창을 생성합니다.
   pcConfigWin = new BrowserWindow({
@@ -139,6 +111,34 @@ const openPCConfigWindow = function() {
       }
     );
   })
+}
+
+const getPcConfigLocalStorage = function() {
+  const localStorage = new Store();
+
+  if(localStorage.get('pc_config') == undefined) {
+    if(currentPlatform == 'WINDOWS') {
+      localStorage.set('pc_config.port', DEFAULT_SERIAL_PORT_WINDOW);
+    }
+    else {
+      localStorage.set('pc_config.port', DEFAULT_SERIAL_PORT_LINUX);
+    }
+
+    localStorage.set('pc_config.baudrate', 24);
+    localStorage.set('pc_config.databits', 8);
+    localStorage.set('pc_config.parity', PARITY_NONE);
+    localStorage.set('pc_config.stopbits', 1);
+    localStorage.set('pc_config.terminator', CRLF);
+  }
+  else {
+    var tmpConfig = localStorage.get('pc_config');
+    pcConfig.port = tmpConfig.port;
+    pcConfig.baudrate = tmpConfig.baudrate;
+    pcConfig.databits = tmpConfig.databits;
+    pcConfig.parity = tmpConfig.parity;
+    pcConfig.stopbits = tmpConfig.stopbits;
+    pcConfig.terminator = tmpConfig.terminator;
+  }
 }
 
 const setStreamMode = function() {
@@ -178,10 +178,11 @@ const rssetCommand = function() {
   })
 }
 
-//TODO scale의 변수명 수정 및 scale 클래스 추가
 const readHeader = function(rx) {
   // TODO trim을 하는게 맞는건지 판단 필요
   rx = rx.trim();
+
+  // TODO console 지우기
   console.log(rx);
   const header1bit = rx.substr(0, 1);
   const header2bit = rx.substr(0, 2);
@@ -416,10 +417,6 @@ const readHeader = function(rx) {
           serialConfig.terminator = data;
           console.log(serialConfig);
           configWin.webContents.send('get_serial_config_data', serialConfig);
-
-          setTimeout(function(){
-            // getRomVer();
-          },1000);
         }
       }
     }
@@ -535,7 +532,7 @@ const getRomVer = function() {
 const setSerialConfig = function(data) {
   console.log('set_serial_config');
 
-  console.log('set_device_serial_data');
+
   var arg = '';
   if(data.baudrate.length == 2) {
     arg += '0' + data.baudrate;
@@ -546,9 +543,8 @@ const setSerialConfig = function(data) {
 
   arg = arg + data.databits + data.parity + data.stopbits + data.terminator;
 
+  console.log('set_device_serial_data');
   var command = 'RSSTO,' + arg + '\r\n';
-  console.log(command);
-  console.log(data);
   scale.f = true;
   sp.write(command, function(err){
     if(err) {

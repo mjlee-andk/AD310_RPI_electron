@@ -189,4 +189,4 @@ initButton.addEventListener('click', function(){
 })
 
 
-serialDiv.style.display = "flex";
+// serialDiv.style.display = "flex";

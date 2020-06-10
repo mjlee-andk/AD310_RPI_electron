@@ -24,13 +24,23 @@
         text-align: right;
         font-size: 105px;
       }
+
+      .btn-custom-size{
+        width:89px;
+        height:68px;
+      }
+      .lbl-custom-size{
+        width: 70px;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
     <div>
       <div class="p-3">
         <div class="position-relative mt-2 mb-2">
-          <span class="display-2">AD310_RPI</span>
+          <img style="vertical-align:top" src="./img/and_logo.png">
+          <span class="display-2 ml-3">AD310_RPI</span>
           <div class="d-inline" style="float:right;">
             <button target="_blank" class="btn btn-primary mr-3" style="float:right;" id="closeMainWindow">종료</button>
             <button target="_blank" class="btn btn-primary mr-3" style="float:right;" id="openInfoWindow">정보</button>
@@ -42,20 +52,20 @@
         <div class="row mt-5">
             <div class="col">
                 <div class="card bg-primary shadow-soft border-light">
-                    <div class="row">
+                    <div class="row p-2">
                         <div class="col-12 col-sm-2 px-md-0 mb-4 mb-sm-0">
                             <div class="pt-3 text-center bg-primary">
                                 <div class="mb-3">
-                                    <span class="badge badge-lg text-uppercase" id="labelStable">stable</span>
+                                    <span class="badge badge-lg text-uppercase lbl-custom-size" id="labelStable">stable</span>
                                 </div>
                                 <div class="mb-3">
-                                    <span class="badge badge-lg text-uppercase" id="labelHold">hold</span>
+                                    <span class="badge badge-lg text-uppercase lbl-custom-size" id="labelHold">hold</span>
                                 </div>
                                 <div class="mb-3">
-                                    <span class="badge badge-lg text-uppercase" id="labelZero">zero</span>
+                                    <span class="badge badge-lg text-uppercase lbl-custom-size" id="labelZero">zero</span>
                                 </div>
                                 <div class="mb-3">
-                                    <span class="badge badge-lg text-uppercase" id="labelNet">net</span>
+                                    <span class="badge badge-lg text-uppercase lbl-custom-size" id="labelNet">net</span>
                                 </div>
                             </div>
                         </div>
@@ -66,20 +76,19 @@
                             </div>
                         </div>
                         <div class="col-12 col-sm-4 px-md-0">
-                            <div class="card-body text-center bg-primary">
-                                <div>
-                                  <button class="btn btn-primary mb-2" type="button" id="setClearTare" disabled>CLEAR</br>TARE</button>
-                                  <button class="btn btn-primary mb-2" type="button" id="setZeroTare" disabled>ZERO</br>TARE</button>
+                            <div class="text-center bg-primary">
+                                <div class="mb-2">
+                                  <button class="btn btn-primary btn-custom-size" type="button" id="setClearTare" disabled>CLEAR</br>TARE</button>
+                                  <button class="btn btn-primary btn-custom-size ml-2" type="button" id="setZeroTare" disabled>ZERO</br>TARE</button>
                                 </div>
-                                <div>
-                                  <button class="btn btn-primary mb-2" type="button" id="setGrossNet" disabled>GROSS</br>NET</button>
-                                  <button class="btn btn-primary mb-2" type="button" id="setHold" disabled>HOLD</button>
+                                <div class="mb-2">
+                                  <button class="btn btn-primary btn-custom-size" type="button" id="setGrossNet" disabled>GROSS</br>NET</button>
+                                  <button class="btn btn-primary btn-custom-size ml-2" type="button" id="setHold" disabled>HOLD</button>
                                 </div>
-                                <div>
-                                  <button class="btn btn-primary mb-2" type="button" id="onOff">ON</button>
-                                  <button class="btn btn-primary mb-2" type="button" id="print" disabled>PRINT</button>
+                                <div class="mb-2">
+                                  <button class="btn btn-primary btn-custom-size" type="button" id="onOff">ON</button>
+                                  <button class="btn btn-primary btn-custom-size ml-2" type="button" id="print" disabled>PRINT</button>
                                 </div>
-
                             </div>
                         </div>
                     </div>
