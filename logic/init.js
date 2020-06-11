@@ -50,8 +50,10 @@ ipcRenderer.on('init_finish', (event, arg) => {
   .showMessageBox(
     { type: 'info',
       title: '초기화 완료',
-      message: '초기화가 완료 되었습니다. 확인을 누르시면 첫 화면으로 돌아갑니다.'
+      message: '초기화가 완료 되었습니다. 확인을 누르시면 첫 화면으로 돌아갑니다.',
+      buttons: ['ok']
     }).then(result => {
+
       var window = remote.getCurrentWindow();
       window.close();
     }).catch(err => {

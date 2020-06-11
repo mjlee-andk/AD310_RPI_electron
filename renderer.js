@@ -24,6 +24,8 @@ openConfigWindowButton.addEventListener('click', function(){
 })
 
 openInfoWindowButton.addEventListener('click', function(){
+  remote.dialog.showMessageBox({type: 'info', title: '정보', message: '준비중입니다.'});
+  return;
   console.log('openInfoWindowButton');
   setTimeout(function(){
     openInfoWindowButton.blur();
@@ -120,7 +122,7 @@ ipcRenderer.on('print', (event, data) => {
 });
 
 ipcRenderer.on('main_button_active', (event, isActive) => {
-  // 프로그램 OFF 상태
+  // 프로그램 ON 상태
   if(!isActive) {
     setClearTareButton.disabled = true;
     setZeroTareButton.disabled = true;
@@ -130,7 +132,7 @@ ipcRenderer.on('main_button_active', (event, isActive) => {
     openPCConfigWindowButton.disabled = false;
     openConfigWindowButton.disabled = true;
   }
-  // 프로그램 ON 상태
+  // 프로그램 OFF 상태
   else {
     setClearTareButton.disabled = false;
     setZeroTareButton.disabled = false;

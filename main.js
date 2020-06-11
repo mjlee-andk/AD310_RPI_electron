@@ -48,10 +48,10 @@ const createWindow = function() {
       nodeIntegration: true
     },
     frame: false,
-    // fullscreen: true
+    fullscreen: true
   })
   win.loadFile('index.html');
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   currentPlatform = platformsNames[os.platform()];
 
@@ -68,12 +68,12 @@ const openConfigWindow = function() {
       nodeIntegration: true
     },
     frame: false,
-    // fullscreen: true
+    fullscreen: true
   })
 
 
   configWin.loadFile('view/config.html');
-  configWin.webContents.openDevTools();
+  // configWin.webContents.openDevTools();
 
   configWin.webContents.on('did-finish-load', () => {
     setTimeout(function() {
@@ -180,7 +180,7 @@ const rssetCommand = function() {
 
 const readHeader = function(rx) {
   // TODO trim을 하는게 맞는건지 판단 필요
-  rx = rx.trim();
+  // rx = rx.trim();
 
   // TODO console 지우기
   console.log(rx);
@@ -200,8 +200,35 @@ const readHeader = function(rx) {
         console.log(err.message)
         return;
       }
-      openPort();
       configWin.webContents.send('init_finish', 'ok');
+      sp = openPort();
+
+      const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CRLF ? '\r\n' : '\r' }));
+      lineStream.on('data', function(rx) {
+        readHeader(rx);
+        win.webContents.send('rx_data', scale);
+        isOpen = true;
+        changeMainButtonActive(isOpen);
+      });
+
+      setTimeout(function(){
+        if(!isOpen) {
+          changeMainButtonActive(isOpen);
+          scale.displayMsg = '-----';
+          win.webContents.send('rx_data', scale);
+          sp.close(function(err){
+            if(err) {
+              console.log(err.message)
+              return;
+            }
+            console.log('closed');
+          });
+        }
+        else {
+          // setStreamMode();
+        }
+      }, 2000);
+
     });
 
     return;
@@ -334,7 +361,38 @@ const readHeader = function(rx) {
               return;
             }
             console.log('closed');
-            openPort();
+            sp = openPort();
+
+            // 연결중임을 표시
+            // scale.displayMsg = 'conn';
+            // win.webContents.send('rx_data', scale);
+
+            //
+            const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CRLF ? '\r\n' : '\r' }));
+            lineStream.on('data', function(rx) {
+              readHeader(rx);
+              win.webContents.send('rx_data', scale);
+              isOpen = true;
+              changeMainButtonActive(isOpen);
+            });
+
+            setTimeout(function(){
+              if(!isOpen) {
+                changeMainButtonActive(isOpen);
+                scale.displayMsg = '-----';
+                win.webContents.send('rx_data', scale);
+                sp.close(function(err){
+                  if(err) {
+                    console.log(err.message)
+                    return;
+                  }
+                  console.log('closed');
+                });
+              }
+              else {
+                // setStreamMode();
+              }
+            }, 2000);
             return;
           });
         }
@@ -394,7 +452,13 @@ const readHeader = function(rx) {
 
         if(header4bit == 'F201') {
           console.log('success F201');
-          serialConfig.baudrate = data;
+
+          serialConfig.baudrate = pcConfig.baudrate;
+          serialConfig.databits = Number(pcConfig.databits);
+          serialConfig.parity = pcConfig.parity;
+          serialConfig.stopbits = Number(pcConfig.stopbits);
+          serialConfig.terminator = pcConfig.terminator == CRLF ? 1 : 2;
+          configWin.webContents.send('get_serial_config_data', serialConfig);
         }
 
         if(header4bit == 'F202') {
@@ -416,11 +480,12 @@ const readHeader = function(rx) {
           console.log('success F205');
           serialConfig.terminator = data;
           console.log(serialConfig);
-          configWin.webContents.send('get_serial_config_data', serialConfig);
+          // configWin.webContents.send('get_serial_config_data', serialConfig);
         }
       }
     }
   else {
+    console.log(rx.length);
     if(rx.length < 16) {
       return;
     }
@@ -492,30 +557,31 @@ const makeFormat = function(data) {
 
   const value = data.substr(6,8);
   const unit = data.substr(14,2).trim();
+  console.log(unit);
 
-   result = Number(value).toString();
+  result = Number(value).toString();
 
-   const pointPos = value.indexOf('.');
-   if(pointPos > 0) {
-     result = Number(value).toFixed(7-pointPos).toString();
-   }
+  const pointPos = value.indexOf('.');
+  if(pointPos > 0) {
+    result = Number(value).toFixed(7-pointPos).toString();
+  }
 
-   scale.isZero = false;
-   if(result.substr(0,1).includes('0')) {
-     scale.isZero = true;
-   }
+  scale.isZero = false;
+  if(result.substr(0,1).includes('0')) {
+    scale.isZero = true;
+  }
 
-   if(unit.length == 2) {
-     scale.unit = 2;
-   }
-   else {
-     scale.unit = 1;
-     if(unit == 't') {
-       scale.unit = 3;
-     }
-   }
+  scale.unit = unit.length;
+  if(unit.length == 1) {
+    if(unit == 'g') {
+      scale.unit = 1;
+    }
+    else {
+      scale.unit = 3;
+    }
+  }
 
-   return result;
+  return result;
 }
 
 const getRomVer = function() {
@@ -1265,8 +1331,11 @@ ipcMain.on('on_off', (event, arg) => {
       win.webContents.send('on_off', 'OFF');
       sp = openPort();
 
-      scale.displayMsg = 'conn';
-      win.webContents.send('rx_data', scale);
+      // 연결중임을 표시
+      // scale.displayMsg = 'conn';
+      // win.webContents.send('rx_data', scale);
+
+      //
       const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CRLF ? '\r\n' : '\r' }));
       lineStream.on('data', function(rx) {
         readHeader(rx);

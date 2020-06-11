@@ -187,6 +187,3 @@ initButton.addEventListener('click', function(){
   setDivDisplay(TAB_INIT);
   setButtonActive(TAB_INIT);
 })
-
-
-// serialDiv.style.display = "flex";
