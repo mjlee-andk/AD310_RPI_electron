@@ -13,7 +13,10 @@ require('./init');
 //
 const configOkButton = document.getElementById("configOk");
 configOkButton.addEventListener('click', function(){
-  configOkButton.blur();
+  setTimeout(function(){
+    configOkButton.blur();
+  }, 200)
+
   if(serialDiv.style.display == 'flex') {
     setSerialConfigData();
   }
@@ -36,11 +39,17 @@ configOkButton.addEventListener('click', function(){
 const closeConfigWindowButton = document.getElementById("closeConfigWindow");
 closeConfigWindowButton.addEventListener('click', function(){
   console.log('closeConfigWindowButton');
+  setTimeout(function(){
+    closeConfigWindowButton.blur();
+  }, 200)
 
   ipcRenderer.send('set_stream_mode', 'ok');
-  var window = remote.getCurrentWindow();
-  window.close();
+  closeWindow();
 });
+
+const closeWindow = function() {
+  ipcRenderer.send('window_close', 'config');
+}
 
 const romVer = document.getElementById("romVer");
 

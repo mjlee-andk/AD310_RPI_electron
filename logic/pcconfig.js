@@ -1,22 +1,9 @@
-const { BrowserWindow, ipcRenderer } = require('electron')
-const remote = require('electron').remote;
-const Store = require('electron-store');
-const { PARITY_NONE, PARITY_ODD, PARITY_EVEN, CRLF, CR } = require('../util/constant');
+const { ipcRenderer } = require('electron')
 const { uartFlag } = require('../util/flag');
+const { PARITY_NONE, PARITY_ODD, PARITY_EVEN, CRLF, CR } = require('../util/constant');
 
-const pcConfigOkButton = document.getElementById("pcConfigOk");
-pcConfigOkButton.addEventListener('click', function(){
-  setPcConfig();
-
-  var window = remote.getCurrentWindow();
-  window.close();
-})
-
-const closePCConfigWindowButton = document.getElementById("closePCConfigWindow");
-closePCConfigWindowButton.addEventListener('click', function(){
-  var window = remote.getCurrentWindow();
-  window.close();
-})
+const pcConfigOkButton = document.getElementById("pcConfigOkButton");
+const pCConfigCloseButton = document.getElementById("pCConfigCloseButton");
 
 const portSelect = document.getElementById("portSelect");
 const baudrateSelect = document.getElementById("baudrateSelect");
@@ -30,39 +17,40 @@ const stopbitsRadios2 = document.getElementById("stopbitsRadios2");
 const terminatorRadios1 = document.getElementById("terminatorRadios1");
 const terminatorRadios2 = document.getElementById("terminatorRadios2");
 
+pcConfigOkButton.addEventListener('click', function() {
+  setTimeout(function(){
+    pcConfigOkButton.blur();
+  }, 200)
+  pcConfigSetData();
+  closeWindow();
+})
+
+pCConfigCloseButton.addEventListener('click', function() {
+  setTimeout(function(){
+    pCConfigCloseButton.blur();
+  }, 200)
+  closeWindow();
+})
+
 // PC설정 화면 시작시 데이터 받아오기
-ipcRenderer.on('get_pc_config_data', (event, data) => {
-  console.log('get_pc_config_data');
+ipcRenderer.on('pc_config_get_data', (event, data) => {
+  console.log('pc_config_get_data');
 
   portSelect.value = data.port;
   baudrateSelect.value = data.baudrate;
-  if(data.databits == 7) {
-    dataBitsRadios1.checked = true;
-  }
-  else if(data.databits == 8) {
-    dataBitsRadios2.checked = true;
-  }
-  if(data.parity == PARITY_NONE) {
-    parityRadios1.checked = true;
-  }
-  else if(data.parity == PARITY_ODD) {
-    parityRadios2.checked = true;
-  }
-  else if(data.parity == PARITY_EVEN) {
-    parityRadios3.checked = true;
-  }
-  if(data.stopbits == 1) {
-    stopbitsRadios1.checked = true;
-  }
-  else if(data.stopbits == 2) {
-    stopbitsRadios2.checked = true;
-  }
-  if(data.terminator == CRLF) {
-    terminatorRadios1.checked = true;
-  }
-  else if(data.terminator == CR) {
-    terminatorRadios2.checked = true;
-  }
+
+  dataBitsRadios1.checked = (data.databits == 7);
+  dataBitsRadios2.checked = (data.databits == 8);
+
+  parityRadios1.checked = (data.parity == PARITY_NONE);
+  parityRadios2.checked = (data.parity == PARITY_ODD);
+  parityRadios3.checked = (data.parity == PARITY_EVEN);
+
+  stopbitsRadios1.checked = (data.stopbits == 1);
+  stopbitsRadios2.checked = (data.stopbits == 2);
+
+  terminatorRadios1.checked = (data.terminator == CRLF);
+  terminatorRadios2.checked = (data.terminator == CR);
 });
 
 // Port 리스트 받아오기
@@ -77,53 +65,25 @@ ipcRenderer.on('port_list', (event, data) => {
   })
 });
 
-// pc config에서 설정한 값들 보내기
-var setPcConfig = function() {
+// 기기 설정 페이지에서 입력 받은 데이터로 설정하기
+const pcConfigSetData = function() {
   var pcConfigNow = new uartFlag('COM1', 24, 8, PARITY_NONE, 1, CRLF);
 
   pcConfigNow.port = portSelect.options[portSelect.selectedIndex].value;
   pcConfigNow.baudrate = baudrateSelect.options[baudrateSelect.selectedIndex].value;
 
-  if(dataBitsRadios1.checked) {
-    pcConfigNow.databits = dataBitsRadios1.value;
-  }
-  else if(dataBitsRadios2.checked) {
-    pcConfigNow.databits = dataBitsRadios2.value;
-  }
+  pcConfigNow.port = portSelect.options[portSelect.selectedIndex].value;
+  pcConfigNow.baudrate = baudrateSelect.options[baudrateSelect.selectedIndex].value;
 
-  if(parityRadios1.checked) {
-    pcConfigNow.parity = parityRadios1.value;
-  }
-  else if(parityRadios2.checked) {
-    pcConfigNow.parity = parityRadios2.value;
-  }
-  else if(parityRadios3.checked) {
-    pcConfigNow.parity = parityRadios3.value;
-  }
+  pcConfigNow.databits = dataBitsRadios1.checked ? dataBitsRadios1.value : dataBitsRadios2.value;
+  pcConfigNow.parity = parityRadios1.checked ? parityRadios1.value : (parityRadios2.checked ? parityRadios2.value : parityRadios3.value);
+  pcConfigNow.stopbits = stopbitsRadios1.checked ? stopbitsRadios1.value : stopbitsRadios2.value;
+  pcConfigNow.terminator = terminatorRadios1.checked ? terminatorRadios1.value : terminatorRadios2.value;
 
-  if(stopbitsRadios1.checked) {
-    pcConfigNow.stopbits = stopbitsRadios1.value;
-  }
-  else if(stopbitsRadios2.checked) {
-    pcConfigNow.stopbits = stopbitsRadios2.value;
-  }
-
-  if(terminatorRadios1.checked) {
-    pcConfigNow.terminator = terminatorRadios1.value;
-  }
-  else if(terminatorRadios2.checked) {
-    pcConfigNow.terminator = terminatorRadios2.value;
-  }
-
-  const localStorage = new Store();
-
-  localStorage.set('pc_config.port', pcConfigNow.port);
-  localStorage.set('pc_config.baudrate', pcConfigNow.baudrate);
-  localStorage.set('pc_config.databits', pcConfigNow.databits);
-  localStorage.set('pc_config.parity', pcConfigNow.parity);
-  localStorage.set('pc_config.stopbits', pcConfigNow.stopbits);
-  localStorage.set('pc_config.terminator', pcConfigNow.terminator);
-
-  ipcRenderer.send('set_pc_config_data', pcConfigNow);
+  ipcRenderer.send('pc_config_set_data', pcConfigNow);
   return;
+}
+
+const closeWindow = function() {
+  ipcRenderer.send('window_close', 'pc_config');
 }

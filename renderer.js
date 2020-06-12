@@ -6,6 +6,22 @@ const openPCConfigWindowButton = document.getElementById("openPCConfigWindow");
 const openConfigWindowButton = document.getElementById("openConfigWindow");
 const openInfoWindowButton = document.getElementById("openInfoWindow");
 const closeMainWindowButton = document.getElementById("closeMainWindow");
+// 계량값 표시부
+const displayMsg = document.getElementById("displayMsg");
+const unitTag = document.getElementById("unit");
+// 라벨 표시
+const labelStableClass = document.getElementById("labelStable");
+const labelHoldClass = document.getElementById("labelHold");
+const labelZeroClass = document.getElementById("labelZero");
+const labelNetClass = document.getElementById("labelNet");
+
+// 메인 동작 관련 커맨드 버튼
+const setClearTareButton = document.getElementById("setClearTare");
+const setZeroTareButton = document.getElementById("setZeroTare");
+const setGrossNetButton = document.getElementById("setGrossNet");
+const setHoldButton = document.getElementById("setHold");
+const printButton = document.getElementById("print");
+const onOffButton = document.getElementById("onOff");
 
 openPCConfigWindowButton.addEventListener('click', function(){
   console.log('openPCConfigWindowButton');
@@ -24,6 +40,7 @@ openConfigWindowButton.addEventListener('click', function(){
 })
 
 openInfoWindowButton.addEventListener('click', function(){
+  // TODO 다이얼로그 삭제 후 remote 없앨것
   remote.dialog.showMessageBox({type: 'info', title: '정보', message: '준비중입니다.'});
   return;
   console.log('openInfoWindowButton');
@@ -35,20 +52,19 @@ openInfoWindowButton.addEventListener('click', function(){
 
 closeMainWindowButton.addEventListener('click', function(){
   console.log('closeMainWindowButton');
+
   setTimeout(function(){
     closeMainWindowButton.blur();
   }, 200)
+
   ipcRenderer.send('set_stream_mode', 'ok');
-  var window = remote.getCurrentWindow();
-  window.close();
+  closeWindow();
 })
 
-
 ipcRenderer.on('rx_data', (event, data) => {
-  document.getElementById("displayMsg").innerHTML = data.displayMsg;
+  displayMsg.innerHTML = data.displayMsg;
 
   // 단위 표시
-  const unitTag = document.getElementById("unit");
   if(data.unit == 1) {
     unitTag.innerHTML = 'g';
   }
@@ -62,60 +78,34 @@ ipcRenderer.on('rx_data', (event, data) => {
     unitTag.innerHTML = '';
   }
 
-  // 라벨 표시
-  const labelStableClass = document.getElementById("labelStable");
-  const labelHoldClass = document.getElementById("labelHold");
-  const labelZeroClass = document.getElementById("labelZero");
-  const labelNetClass = document.getElementById("labelNet");
-
   if(data.isStable) {
     labelStableClass.style.color = 'red';
   }
   else {
-    // labelStableClass.remove('badge-success');
-    // labelStableClass.add('badge-secondary');
     labelStableClass.style.color = 'black';
   }
 
   if(data.isHold) {
     labelHoldClass.style.color = 'red';
-    // labelHoldClass.add('badge-success');
   }
   else {
     labelHoldClass.style.color = 'black';
-    // labelHoldClass.add('badge-secondary');
   }
 
   if(data.isZero) {
-    // labelZeroClass.remove('badge-secondary');
     labelZeroClass.style.color = 'red';
   }
   else {
-    // labelZeroClass.remove('badge-success');
     labelZeroClass.style.color = 'black';
   }
 
   if(data.isNet) {
-    // labelNetClass.remove('badge-secondary');
     labelNetClass.style.color = 'red';
   }
   else {
-    // labelNetClass.remove('badge-success');
     labelNetClass.style.color = 'black';
   }
 })
-
-
-const setClearTareButton = document.getElementById("setClearTare");
-const setZeroTareButton = document.getElementById("setZeroTare");
-const setGrossNetButton = document.getElementById("setGrossNet");
-const setHoldButton = document.getElementById("setHold");
-const printButton = document.getElementById("print");
-const onOffButton = document.getElementById("onOff");
-
-ipcRenderer.on('on_off', (event, message) => {
-  onOffButton.innerHTML = message
-});
 
 ipcRenderer.on('print', (event, data) => {
 
@@ -129,7 +119,6 @@ ipcRenderer.on('main_button_active', (event, isActive) => {
     setGrossNetButton.disabled = true;
     setHoldButton.disabled = true;
     printButton.disabled = true;
-    openPCConfigWindowButton.disabled = false;
     openConfigWindowButton.disabled = true;
   }
   // 프로그램 OFF 상태
@@ -139,11 +128,9 @@ ipcRenderer.on('main_button_active', (event, isActive) => {
     setGrossNetButton.disabled = false;
     setHoldButton.disabled = false;
     printButton.disabled = false;
-    openPCConfigWindowButton.disabled = true;
     openConfigWindowButton.disabled = false;
   }
 })
-
 
 setClearTareButton.addEventListener('click', function(){
   setTimeout(function(){
@@ -180,10 +167,39 @@ printButton.addEventListener('click', function(){
   ipcRenderer.send('print', 'ok');
 })
 
+const closeWindow = function() {
+  ipcRenderer.send('window_close', 'main');
+}
+
+const setOnOffView = function() {
+  const onoffLabel = onOffButton.innerHTML;
+
+  // 프로그램 시작
+  if(onoffLabel == 'ON') {
+    onOffButton.innerHTML = 'OFF';
+    openPCConfigWindowButton.disabled = true;
+  }
+  // 프로그램 종료
+  else {
+    onOffButton.innerHTML = 'ON';
+    openPCConfigWindowButton.disabled = false;
+
+    displayMsg.innerHTML = 'off';
+    unitTag.innerHTML = '';
+
+    labelStableClass.style.color = 'black';
+    labelHoldClass.style.color = 'black';
+    labelZeroClass.style.color = 'black';
+    labelNetClass.style.color = 'black';
+  }
+
+  ipcRenderer.send('on_off', onoffLabel);
+}
+
 onOffButton.addEventListener('click', function(){
   setTimeout(function(){
     onOffButton.blur();
   }, 200)
 
-  ipcRenderer.send('on_off', onOffButton.innerHTML);
+  setOnOffView();
 })

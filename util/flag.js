@@ -47,7 +47,7 @@ class scaleFlag {
   }
 }
 
-class uartFlag{
+class uartFlag {
   constructor(port, baudrate, databits, parity, stopbits, terminator) {
     this.port = port;
     this.baudrate = baudrate;
@@ -58,7 +58,7 @@ class uartFlag{
   }
 }
 
-class basicConfigFlag{
+class basicConfigFlag {
   constructor() {
     // 커맨드로 정보 읽어오는건지 아닌지 확인
     this.isRead = true;
@@ -75,7 +75,7 @@ class basicConfigFlag{
   }
 }
 
-class externalPrintConfigFlag{
+class externalPrintConfigFlag {
   constructor() {
     this.isRead = true,
 

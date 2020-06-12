@@ -31,7 +31,6 @@ var win;
 var configWin;
 var pcConfigWin;
 var scale = new scaleFlag();
-// var pcConfig = new uartFlag('COM1', 24, 8, PARITY_NONE, 1, CRLF);
 var pcConfig = new uartFlag();
 var serialConfig = new uartFlag();
 var basicConfig = new basicConfigFlag();
@@ -99,7 +98,7 @@ const openPCConfigWindow = function() {
   pcConfigWin.loadFile('view/pcconfig.html');
   // pcConfigWin.webContents.openDevTools();
 
-  getPcConfigLocalStorage();
+  pcConfigGetLocalStorage();
 
   // PC설정 화면 로드 완료되면 포트 목록 호출 및 PC설정 데이터 전송
   pcConfigWin.webContents.on('did-finish-load', () => {
@@ -107,13 +106,13 @@ const openPCConfigWindow = function() {
     SerialPort.list().then(
       ports => {
         pcConfigWin.webContents.send('port_list', ports);
-        pcConfigWin.webContents.send('get_pc_config_data', pcConfig)
+        pcConfigWin.webContents.send('pc_config_get_data', pcConfig)
       }
     );
   })
 }
 
-const getPcConfigLocalStorage = function() {
+const pcConfigGetLocalStorage = function() {
   const localStorage = new Store();
 
   if(localStorage.get('pc_config') == undefined) {
@@ -183,7 +182,7 @@ const readHeader = function(rx) {
   // rx = rx.trim();
 
   // TODO console 지우기
-  console.log(rx);
+  // console.log(rx);
   const header1bit = rx.substr(0, 1);
   const header2bit = rx.substr(0, 2);
   const header3bit = rx.substr(0, 3);
@@ -195,40 +194,21 @@ const readHeader = function(rx) {
     // 초기화 된 설정값으로 변경 후 재연결
     const currentPort = pcConfig.port;
     pcConfig = new uartFlag(currentPort, 24, 8, PARITY_NONE, 1, CRLF);
+    const localStorage = new Store();
+    
+    localStorage.set('pc_config.baudrate', 24);
+    localStorage.set('pc_config.databits', 8);
+    localStorage.set('pc_config.parity', PARITY_NONE);
+    localStorage.set('pc_config.stopbits', 1);
+    localStorage.set('pc_config.terminator', CRLF);
+
     sp.close(function(err){
       if(err) {
         console.log(err.message)
         return;
       }
       configWin.webContents.send('init_finish', 'ok');
-      sp = openPort();
-
-      const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CRLF ? '\r\n' : '\r' }));
-      lineStream.on('data', function(rx) {
-        readHeader(rx);
-        win.webContents.send('rx_data', scale);
-        isOpen = true;
-        changeMainButtonActive(isOpen);
-      });
-
-      setTimeout(function(){
-        if(!isOpen) {
-          changeMainButtonActive(isOpen);
-          scale.displayMsg = '-----';
-          win.webContents.send('rx_data', scale);
-          sp.close(function(err){
-            if(err) {
-              console.log(err.message)
-              return;
-            }
-            console.log('closed');
-          });
-        }
-        else {
-          // setStreamMode();
-        }
-      }, 2000);
-
+      startProgram();
     });
 
     return;
@@ -361,39 +341,7 @@ const readHeader = function(rx) {
               return;
             }
             console.log('closed');
-            sp = openPort();
-
-            // 연결중임을 표시
-            // scale.displayMsg = 'conn';
-            // win.webContents.send('rx_data', scale);
-
-            //
-            const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CRLF ? '\r\n' : '\r' }));
-            lineStream.on('data', function(rx) {
-              readHeader(rx);
-              win.webContents.send('rx_data', scale);
-              isOpen = true;
-              changeMainButtonActive(isOpen);
-            });
-
-            setTimeout(function(){
-              if(!isOpen) {
-                changeMainButtonActive(isOpen);
-                scale.displayMsg = '-----';
-                win.webContents.send('rx_data', scale);
-                sp.close(function(err){
-                  if(err) {
-                    console.log(err.message)
-                    return;
-                  }
-                  console.log('closed');
-                });
-              }
-              else {
-                // setStreamMode();
-              }
-            }, 2000);
-            return;
+            startProgram();
           });
         }
         catch(e) {
@@ -485,7 +433,7 @@ const readHeader = function(rx) {
       }
     }
   else {
-    console.log(rx.length);
+    // console.log(rx.length);
     if(rx.length < 16) {
       return;
     }
@@ -557,7 +505,7 @@ const makeFormat = function(data) {
 
   const value = data.substr(6,8);
   const unit = data.substr(14,2).trim();
-  console.log(unit);
+  // console.log(unit);
 
   result = Number(value).toString();
 
@@ -1153,19 +1101,73 @@ const changeMainButtonActive = function(isActive) {
   win.webContents.send('main_button_active', isActive);
 }
 
-ipcMain.on('open_pc_config_window', (event, arg) =>{
+var isPause = false;
+var timer;
+
+const confirmConnection = function() {
+  if(isPause) {
+    return;
+  }
+  scale.waiting_sec++;
+  if(scale.waiting_sec > 1) {
+    scale.displayMsg = '-----';
+    scale.unit = 0;
+    scale.isStable = false;
+    scale.isHold = false;
+    scale.isZero = false;
+    scale.isNet = false;
+    scale.isHg = false;
+    changeMainButtonActive(false);
+    win.webContents.send('rx_data', scale);
+  }
+}
+
+const startWaitTimer = function() {
+  isPause = false;
+  timer = setInterval(function() {
+    confirmConnection();
+  }, 500);
+}
+
+const stopWaitTimer = function() {
+  clearInterval(timer);
+  isPause = true;
+}
+
+ipcMain.on('open_pc_config_window', (event, arg) => {
   console.log('open_pc_config_window');
   openPCConfigWindow();
 })
 
-ipcMain.on('open_config_window', (event, arg) =>{
+ipcMain.on('window_close', (event, arg) => {
+  if(arg == 'main') {
+    win.close();
+  }
+  else if(arg == 'config'){
+      configWin.close();
+  }
+  else if(arg == 'pc_config'){
+      pcConfigWin.close();
+  }
+});
+
+ipcMain.on('open_config_window', (event, arg) => {
   console.log('open_config_window');
   setCommandMode();
 })
 
-ipcMain.on('set_pc_config_data', (event, data) => {
-  console.log('set_pc_config_data');
+ipcMain.on('pc_config_set_data', (event, data) => {
+  console.log('pc_config_set_data');
   pcConfig = data;
+
+  const localStorage = new Store();
+
+  localStorage.set('pc_config.port', data.port);
+  localStorage.set('pc_config.baudrate', data.baudrate);
+  localStorage.set('pc_config.databits', data.databits);
+  localStorage.set('pc_config.parity', data.parity);
+  localStorage.set('pc_config.stopbits', data.stopbits);
+  localStorage.set('pc_config.terminator', data.terminator);
 })
 
 ipcMain.on('set_serial_config_data', (event, data) => {
@@ -1326,74 +1328,50 @@ ipcMain.on('on_off', (event, arg) => {
 
     // 프로그램 시작
     if(arg == 'ON') {
-      getPcConfigLocalStorage();
-
-      win.webContents.send('on_off', 'OFF');
-      sp = openPort();
-
-      // 연결중임을 표시
-      // scale.displayMsg = 'conn';
-      // win.webContents.send('rx_data', scale);
-
-      //
-      const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CRLF ? '\r\n' : '\r' }));
-      lineStream.on('data', function(rx) {
-        readHeader(rx);
-        win.webContents.send('rx_data', scale);
-        isOpen = true;
-        changeMainButtonActive(isOpen);
-      });
-
-      setTimeout(function(){
-        if(!isOpen) {
-          changeMainButtonActive(isOpen);
-          scale.displayMsg = '-----';
-          win.webContents.send('rx_data', scale);
-          sp.close(function(err){
-            if(err) {
-              console.log(err.message)
-              return;
-            }
-            console.log('closed');
-          });
-        }
-        else {
-          // setStreamMode();
-        }
-      }, 2000);
+      startWaitTimer();
+      pcConfigGetLocalStorage();
+      startProgram();
     }
 
     // 프로그램 종료
     else {
-      win.webContents.send('on_off', 'ON');
-      if(sp != undefined) {
-        sp.close(function(err){
-          setStreamMode();
-          if(err) {
-            console.log(err.message)
-            return;
-          }
-          console.log('closed');
-        });
-      }
-      // 디스플레이부 OFF 표시
-      scale.displayMsg = 'off';
-      // 상태표시 라벨 초기화
-      scale.isStable = false;
-      scale.isZero = false;
-      scale.isNet = false;
-      scale.isHold = false;
-      scale.isHg = false;
-
-      scale.unit = 0;
-
-      win.webContents.send('rx_data', scale);
-      changeMainButtonActive(false);
+      stopWaitTimer();
+      stopProgram();
     }
   }
   catch(e) {
     console.log(e);
   }
 })
+
+const startProgram = function() {
+  sp = openPort();
+
+  const lineStream = sp.pipe(new Readline({ delimiter: pcConfig.terminator == CRLF ? '\r\n' : '\r' }));
+  lineStream.on('data', function(rx) {
+    readHeader(rx);
+    win.webContents.send('rx_data', scale);
+    scale.waiting_sec = 0;
+    isOpen = true;
+    changeMainButtonActive(isOpen);
+  });
+}
+
+const stopProgram = function() {
+  scale = new scaleFlag();
+
+  if(sp != undefined) {
+    sp.close(function(err){
+      setStreamMode();
+      if(err) {
+        console.log(err.message)
+        return;
+      }
+      console.log('closed');
+    });
+  }
+
+  changeMainButtonActive(false);
+}
 
 app.whenReady().then(createWindow)
