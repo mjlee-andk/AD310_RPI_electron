@@ -40,6 +40,9 @@ openConfigWindowButton.addEventListener('click', function(){
 })
 
 openInfoWindowButton.addEventListener('click', function(){
+  setTimeout(function(){
+    openInfoWindowButton.blur();
+  }, 200)
   // TODO 다이얼로그 삭제 후 remote 없앨것
   remote.dialog.showMessageBox({type: 'info', title: '정보', message: '준비중입니다.'});
   return;

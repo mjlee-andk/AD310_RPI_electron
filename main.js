@@ -195,7 +195,7 @@ const readHeader = function(rx) {
     const currentPort = pcConfig.port;
     pcConfig = new uartFlag(currentPort, 24, 8, PARITY_NONE, 1, CRLF);
     const localStorage = new Store();
-    
+
     localStorage.set('pc_config.baudrate', 24);
     localStorage.set('pc_config.databits', 8);
     localStorage.set('pc_config.parity', PARITY_NONE);

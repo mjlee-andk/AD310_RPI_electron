@@ -55,6 +55,7 @@ calSpanButton.addEventListener('click', function(){
     }).then(result => {
       console.log(result);
       const response = result.response;
+
       if(response == 0) {
         ipcRenderer.send('set_cal_span', 'ok');
       }
