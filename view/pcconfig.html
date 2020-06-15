@@ -21,8 +21,8 @@
   </head>
   <body>
     <div class="p-3">
-      <div class="position-relative mt-2 mb-2">
-        <span class="display-2">기기 설정</span>
+      <div class="position-relative my-2 ml-3">
+        <span class="display-2" style="font-size:2.5em">기기 설정</span>
         <div class="d-inline" style="float:right;">
           <a target="_blank" class="btn btn-primary mr-3" style="float:right;" id="pCConfigCloseButton">뒤로</a>
           <a target="_blank" class="btn btn-primary mr-3" style="float:right;" id="pcConfigOkButton">변경</a>
@@ -36,22 +36,22 @@
                       <div class="offset-1">
                       </div>
                       <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
-                          <div class="bg-primary mt-2">
+                          <div class="bg-primary mt-3">
                               <h1 class="display-4 mb-3">Port</h1>
                               <h1 class="display-4 mb-3">Baudrate</h1>
-                              <h1 class="display-4">Databits</h1>
-                              <h1 class="display-4">Parity</h1>
-                              <h1 class="display-4">Stopbits</h1>
+                              <h1 class="display-4 mb-3">Databits</h1>
+                              <h1 class="display-4 mb-3">Parity</h1>
+                              <h1 class="display-4 mb-3">Stopbits</h1>
                               <h1 class="display-4">Terminator</h1>
                           </div>
                       </div>
                       <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
-                        <div class="bg-primary">
-                          <div class="bg-primary w-50">
+                        <div class="bg-primary mt-2">
+                          <div class="bg-primary mb-3 w-50">
                             <select id="portSelect" class="custom-select mr-sm-2">
                             </select>
                           </div>
-                          <div class="bg-primary mt-1 w-50">
+                          <div class="bg-primary mb-3 w-50">
                             <select id="baudrateSelect" class="custom-select mr-sm-2">
                                 <option value="24">2400</option>
                                 <option value="48">4800</option>
@@ -60,7 +60,7 @@
                                 <option value="384">38400</option>
                             </select>
                           </div>
-                          <div class="bg-primary mt-3">
+                          <div class="bg-primary mb-4">
                             <fieldset>
                                 <div class="form-check">
                                   <input class="form-check-input" type="radio" name="dataBitsRadios" id="dataBitsRadios1" value="7">
@@ -76,7 +76,7 @@
                               <!-- End of Radio -->
                             </fieldset>
                           </div>
-                          <div class="bg-primary mt-3">
+                          <div class="bg-primary mb-4">
                             <fieldset>
                                 <div class="form-check">
                                   <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios1" value="0">
@@ -97,7 +97,7 @@
                               <!-- End of Radio -->
                             </fieldset>
                           </div>
-                          <div class="bg-primary mt-3">
+                          <div class="bg-primary mb-4">
                             <fieldset>
                                 <div class="form-check">
                                   <input class="form-check-input" type="radio" name="stopbitsRadios" id="stopbitsRadios1" value="1">
@@ -113,7 +113,7 @@
                               <!-- End of Radio -->
                             </fieldset>
                           </div>
-                          <div class="bg-primary mt-3">
+                          <div class="bg-primary mb-4">
                             <fieldset>
                                 <div class="form-check">
                                   <input class="form-check-input" type="radio" name="terminatorRadios" id="terminatorRadios1" value="1">

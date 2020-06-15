@@ -47,10 +47,10 @@ const createWindow = function() {
       nodeIntegration: true
     },
     frame: false,
-    fullscreen: true
+    // fullscreen: true
   })
   win.loadFile('index.html');
-  // win.webContents.openDevTools();
+  win.webContents.openDevTools();
 
   currentPlatform = platformsNames[os.platform()];
 
@@ -67,12 +67,12 @@ const openConfigWindow = function() {
       nodeIntegration: true
     },
     frame: false,
-    fullscreen: true
+    // fullscreen: true
   })
 
 
   configWin.loadFile('view/config.html');
-  // configWin.webContents.openDevTools();
+  configWin.webContents.openDevTools();
 
   configWin.webContents.on('did-finish-load', () => {
     setTimeout(function() {
@@ -92,7 +92,7 @@ const openPCConfigWindow = function() {
       nodeIntegration: true
     },
     frame: false,
-    fullscreen: true
+    // fullscreen: true
   })
 
   pcConfigWin.loadFile('view/pcconfig.html');

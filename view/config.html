@@ -51,8 +51,8 @@
   <body>
     <div class="p-3">
       <!--헤더-->
-      <div class="position-relative mt-2">
-        <span class="display-2">설정</span>
+      <div class="position-relative my-2 ml-3">
+        <span class="display-2" style="font-size:2.5em">설정</span>
         <span class="ml-3">ROM Ver. </span><span id="romVer"></span>
         <!-- <div class="d-inline-block loader ml-3"></div> -->
         <div class="d-inline" style="float:right;">
@@ -79,8 +79,8 @@
                 </div>
               </div>
               <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
-                <div class="bg-primary">
-                  <div class="bg-primary mt-1 w-50">
+                <div class="bg-primary mt-2">
+                  <div class="bg-primary mb-3 w-50">
                     <select id="baudrateSelect" class="custom-select mr-sm-2">
                         <option value="24">2400</option>
                         <option value="48">4800</option>
@@ -89,10 +89,10 @@
                         <option value="384">38400</option>
                     </select>
                   </div>
-                  <div class="bg-primary mt-3">
+                  <div class="bg-primary mb-4">
                     <fieldset>
                         <div class="form-check">
-                          <input class="form-check-input" type="radio" name="dataBitsRadios" id="dataBitsRadios1" value="7" checked="">
+                          <input class="form-check-input" type="radio" name="dataBitsRadios" id="dataBitsRadios1" value="7">
                           <label class="form-check-label" for="dataBitsRadios1">
                             7bits
                           </label>
@@ -104,10 +104,10 @@
                         </div>
                     </fieldset>
                   </div>
-                  <div class="bg-primary mt-4">
+                  <div class="bg-primary mb-4">
                     <fieldset>
                         <div class="form-check">
-                          <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios1" value="0" checked="">
+                          <input class="form-check-input" type="radio" name="parityRadios" id="parityRadios1" value="0">
                           <label class="form-check-label" for="parityRadios1">
                             None
                           </label>
@@ -124,10 +124,10 @@
                         </div>
                     </fieldset>
                   </div>
-                  <div class="bg-primary mt-4">
+                  <div class="bg-primary mb-4">
                     <fieldset>
                         <div class="form-check">
-                          <input class="form-check-input" type="radio" name="stopbitsRadios" id="stopbitsRadios1" value="1" checked="">
+                          <input class="form-check-input" type="radio" name="stopbitsRadios" id="stopbitsRadios1" value="1">
                           <label class="form-check-label" for="stopbitsRadios1">
                             1bit
                           </label>
@@ -139,10 +139,10 @@
                         </div>
                     </fieldset>
                   </div>
-                  <div class="bg-primary mt-4">
+                  <div class="bg-primary mb-4">
                     <fieldset>
                         <div class="form-check">
-                          <input class="form-check-input" type="radio" name="terminatorRadios" id="terminatorRadios1" value="1" checked="">
+                          <input class="form-check-input" type="radio" name="terminatorRadios" id="terminatorRadios1" value="1">
                           <label class="form-check-label" for="terminatorRadios1">
                             CRLF
                           </label>
@@ -209,28 +209,28 @@
               <div class="offset-1">
               </div>
               <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
-                <div class="bg-primary mt-2">
-                    <h1 class="display-4 mb-3">제로 확보 범위</h1>
-                    <h1 class="display-4 mb-3">영점 트래킹 시간</h1>
-                    <h1 class="display-4 mb-3">영점 트래킹 폭</h1>
-                    <h1 class="display-4 mb-3">파워 온 제로</h1>
+                <div class="bg-primary mt-3">
+                    <h1 class="display-4 mb-4">제로 확보 범위</h1>
+                    <h1 class="display-4 mb-4">영점 트래킹 시간</h1>
+                    <h1 class="display-4 mb-4">영점 트래킹 폭</h1>
+                    <h1 class="display-4 mb-4">파워 온 제로</h1>
                 </div>
               </div>
               <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
-                <div class="bg-primary">
-                  <div class="bg-primary mb-2 pt-1 w-100">
+                <div class="bg-primary mt-3">
+                  <div class="bg-primary mb-4 w-100">
                     <div class="w-50 d-inline-block" id="zeroRangeSlider"></div>
                     <span class="ml-3" id="zeroRangeSliderValue"></span>
                   </div>
-                  <div class="bg-primary mb-2 pt-1 w-100">
+                  <div class="bg-primary mb-4 w-100">
                     <div class="w-50 d-inline-block" id="zeroTrackingTimeSlider"></div>
                     <span class="ml-3" id="zeroTrackingTimeSliderValue"></span>
                   </div>
-                  <div class="bg-primary mb-3 pt-1 w-100">
+                  <div class="bg-primary mb-4 w-100">
                     <div class="w-50 d-inline-block" id="zeroTrackingWidthSlider"></div>
                     <span class="ml-3" id="zeroTrackingWidthSliderValue"></span>
                   </div>
-                  <div class="bg-primary mb-2 pt-1">
+                  <div class="bg-primary mb-4 pt-1">
                     <div class="custom-control custom-switch">
                       <input type="checkbox" class="custom-control-input" id="powerOnZeroToggle">
                       <label class="custom-control-label" for="powerOnZeroToggle"></label>
@@ -247,15 +247,15 @@
               <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
                 <div class="bg-primary mt-2">
                     <!-- <h1 class="display-4 mb-3">Baudrate</h1> -->
-                    <h1 class="display-4 mb-3">출력조건</h1>
-                    <h1 class="display-4 mb-3">설정값</h1>
-                    <h1 class="display-4 mb-3">비교모드</h1>
-                    <h1 class="display-4 mb-3">영점부근비교</h1>
+                    <h1 class="display-4 mb-4">출력조건</h1>
+                    <h1 class="display-4 mb-4">설정값</h1>
+                    <h1 class="display-4 mb-4">비교모드</h1>
+                    <h1 class="display-4 mb-4">영점부근비교</h1>
                 </div>
               </div>
               <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
-                <div class="bg-primary">
-                  <div class="bg-primary mt-2">
+                <div class="bg-primary mt-2">
+                  <div class="bg-primary mb-4">
                     <fieldset>
                         <div class="form-check">
                           <input class="form-check-input" type="radio" name="printConditionRadios" id="printConditionRadios1" value="0" checked="">
@@ -270,8 +270,7 @@
                         </div>
                     </fieldset>
                   </div>
-
-                  <div class="bg-primary mt-3 ml-1">
+                  <div class="bg-primary mb-4 ml-1">
                     <input type="number" id="configValueText" min="-99999" max="99999">
                     <button class="btn btn-pill btn-primary" type="button" id="configValueStepUp">
                       <span class="fas fa-angle-up dropup-arrow"></span>
@@ -289,8 +288,7 @@
                       </select>
                     </div>
                   </div>
-
-                  <div class="bg-primary mt-2">
+                  <div class="bg-primary mb-4">
                     <fieldset>
                         <div class="form-check">
                           <input class="form-check-input" type="radio" name="comparatorModeRadios" id="comparatorModeRadios1" value="0" checked="">
@@ -310,8 +308,7 @@
                         </div>
                     </fieldset>
                   </div>
-
-                  <div class="bg-primary mt-3 ml-1">
+                  <div class="bg-primary mb-4 ml-1">
                     <input type="number" id="nearZeroText" min="-99999" max="99999">
                     <button class="btn btn-pill btn-primary" type="button" id="nearZeroStepUp">
                       <span class="fas fa-angle-up dropup-arrow"></span>
@@ -338,16 +335,16 @@
               <div class="offset-1">
               </div>
               <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
-                <div class="bg-primary mt-2">
-                    <h1 class="display-4 mb-3">CAPA(최대용량)</h1>
-                    <h1 class="display-4 mb-3">DIV(최소눈금)</h1>
-                    <h1 class="display-4 mb-3">소수점</h1>
-                    <h1 class="display-4 mb-3">단위</h1>
+                <div class="bg-primary mt-3">
+                    <h1 class="display-4 mb-4">CAPA(최대용량)</h1>
+                    <h1 class="display-4 mb-4">DIV(최소눈금)</h1>
+                    <h1 class="display-4 mb-4">소수점</h1>
+                    <h1 class="display-4 mb-4">단위</h1>
                 </div>
               </div>
               <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
-                <div class="bg-primary">
-                  <div class="bg-primary mb-1">
+                <div class="bg-primary mt-2">
+                  <div class="bg-primary mb-3">
                       <input type="number" id="capaText" min="1" max="99999">
                       <button class="btn btn-pill btn-primary" type="button" id="capaStepUp">
                         <span class="fas fa-angle-up dropup-arrow"></span>
@@ -365,7 +362,7 @@
                         </select>
                       </div>
                   </div>
-                  <div class="bg-primary mb-1 w-75">
+                  <div class="bg-primary mb-3 w-75">
                     <select id="divSelect" class="custom-select mr-sm-2">
                         <option value="1">1눈금</option>
                         <option value="2">2눈금</option>
@@ -375,7 +372,7 @@
                         <option value="50">50눈금</option>
                     </select>
                   </div>
-                  <div class="bg-primary mb-1 w-75">
+                  <div class="bg-primary mb-3 w-75">
                     <select id="decimalPointSelect" class="custom-select mr-sm-2">
                         <option value="0">1234</option>
                         <option value="1">123.4</option>
@@ -383,7 +380,7 @@
                         <option value="3">1.234</option>
                     </select>
                   </div>
-                  <div class="bg-primary mb-1 w-75">
+                  <div class="bg-primary mb-3 w-75">
                     <select id="unitSelect" class="custom-select mr-sm-2">
                         <option value="0">없음</option>
                         <option value="1">그램(g)</option>
@@ -442,14 +439,14 @@
               <div class="col-12 col-sm-6 px-md-0 mb-4 mb-sm-0">
                 <div class="bg-primary my-2 text-center">
                   <h1 class="display-4 mb-3">F 펑션 초기화</h1>
-                  <h4 class="mb-3">통신/기본(좌)/외부출력 초기화</h4>
+                  <h4 class="mb-5">통신/기본(좌)/외부출력 초기화</h4>
                   <button class="btn btn-primary mr-3" id="initFunctionFButton">초기화</br>적용</button>
                 </div>
               </div>
               <div class="col-12 col-sm-6 px-md-0 mb-4 mb-sm-0">
                 <div class="bg-primary my-2 text-center">
                   <h1 class="display-4 mb-3">모든 설정 초기화</h1>
-                  <h4 class="mb-3">통신/기본/외부출력/교정 초기화</h4>
+                  <h4 class="mb-5">통신/기본/외부출력/교정 초기화</h4>
                   <button class="btn btn-primary mr-3" id="initConfigButton">초기화</br>적용</button>
                 </div>
               </div>
@@ -460,7 +457,8 @@
       </div>
 
       <!--하단 종류 탭-->
-      <div class="position-relative mt-4 ml-2">
+      <!-- <div class="position-relative mt-4 ml-2"> -->
+      <div class="fixed-bottom my-4 ml-5">
         <div class="d-inline" style="float:left;">
           <button class="btn btn-primary mr-4 active" style="float:left;" id="serialConfigButton">통신</button>
           <button class="btn btn-primary mr-4" style="float:left;" id="basicLeftConfigButton">기본(좌)</button>
