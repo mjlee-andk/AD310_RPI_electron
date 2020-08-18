@@ -13,9 +13,11 @@
     "bootstrap": "^4.5.0",
     "electron-store": "^5.2.0",
     "electron-virtual-keyboard": "^1.0.7",
+    "ethernet-ip": "^1.2.5",
     "jquery": "^3.5.1",
     "nouislider": "^14.5.0",
     "popper.js": "^1.16.1",
+    "remote-serial-port-client": "^0.4.0",
     "serialport": "^9.0.0"
   }
 }

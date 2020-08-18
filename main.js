@@ -47,14 +47,30 @@ const createWindow = function() {
       nodeIntegration: true
     },
     frame: false,
+    fullscreen: false
     // fullscreen: true
   })
   win.loadFile('index.html');
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   currentPlatform = platformsNames[os.platform()];
 
   console.log(currentPlatform);
+
+  const net = require('net');
+  const socket = net.connect({
+    port: 8899,
+    host: '192.168.10.26'
+  });
+
+  socket.on('data', function(data){
+    console.log('DATA:',data.toString('ascii'));
+    // console.log(data);
+  })
+
+  socket.on('error', function(err){
+    console.log('on error:', err.code);
+  })
 }
 
 const openConfigWindow = function() {
@@ -67,12 +83,12 @@ const openConfigWindow = function() {
       nodeIntegration: true
     },
     frame: false,
-    // fullscreen: true
+    fullscreen: true
   })
 
 
   configWin.loadFile('view/config.html');
-  configWin.webContents.openDevTools();
+  // configWin.webContents.openDevTools();
 
   configWin.webContents.on('did-finish-load', () => {
     setTimeout(function() {
@@ -92,7 +108,7 @@ const openPCConfigWindow = function() {
       nodeIntegration: true
     },
     frame: false,
-    // fullscreen: true
+    fullscreen: true
   })
 
   pcConfigWin.loadFile('view/pcconfig.html');
