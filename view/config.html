@@ -9,12 +9,13 @@
     <link type="text/css" href="../vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link type="text/css" href="../css/neumorphism.css" rel="stylesheet">
     <script src="../vendor/nouislider/distribute/nouislider.min.js"></script>
-
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
       window.onload = function() {
         require('../logic/config');
       }
     </script>
+
     <style>
       .form-check-label {
         width: 30% !important;
@@ -46,6 +47,52 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
+
+      .keypad{
+          width:200px;
+          height:250px;
+          border:solid 1px black;
+          display:none;
+          position:absolute;
+          top:10px;
+          right:10px;
+          z-index: 6;
+      }
+      #keypad_span {
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .key{
+          border:solid 1px black;
+          background-color:DarkGray;
+          text-align:center;
+          font-weight:bold;
+          color:white;
+          cursor:pointer;
+      }
+      .key:hover{
+          background-color:LightBlue;
+      }
+      .key:active{
+          background-color:white;
+      }
+      .key_btn{
+          border:solid 1px black;
+          text-align:center;
+          font-weight:bold;
+          color:white;
+          cursor:pointer;
+          background-color:DimGray;
+          width:25%;
+      }
+      .key_btn:hover{
+          background-color:DarkGray;
+      }
+      .key_btn:active{
+          background-color:LightGray;
+      }
     </style>
   </head>
   <body>
@@ -63,7 +110,7 @@
       <!--내용-->
       <div class="row mt-4">
         <div class="col">
-          <div class="card bg-primarvy shadow-soft border-light">
+          <div class="card bg-primary shadow-soft border-light">
             <!--통신설정-->
             <div id="serialDiv" class="row p-3" style="display:flex">
               <div class="offset-1">
@@ -241,6 +288,56 @@
 
             <!--외부출력-->
             <div id="externalPrintDiv" class="row p-3" style="display:none">
+              <table class="keypad" id="keypad_config">
+                <tr>
+                    <td class="key key_config">1</td>
+                    <td class="key key_config">2</td>
+                    <td class="key key_config">3</td>
+                    <td class="key key_config"></td>
+                </tr>
+                <tr>
+                    <td class="key key_config">4</td>
+                    <td class="key key_config">5</td>
+                    <td class="key key_config">6</td>
+                    <td class="key key_config"></td>
+                </tr>
+                <tr>
+                    <td class="key key_config">7</td>
+                    <td class="key key_config">8</td>
+                    <td class="key key_config">9</td>
+                    <td class="key_btn key_btn_config">삭제</td>
+                </tr>
+                <tr>
+                    <td class="key_btn key_btn_config">+/-</td>
+                    <td class="key key_config" colspan="2">0</td>
+                    <td class="key_btn key_btn_config">확인</td>
+                </tr>
+              </table>
+              <table class="keypad" id="keypad_nearzero">
+                <tr>
+                    <td class="key key_nearzero">1</td>
+                    <td class="key key_nearzero">2</td>
+                    <td class="key key_nearzero">3</td>
+                    <td class="key key_nearzero"></td>
+                </tr>
+                <tr>
+                    <td class="key key_nearzero">4</td>
+                    <td class="key key_nearzero">5</td>
+                    <td class="key key_nearzero">6</td>
+                    <td class="key key_nearzero"></td>
+                </tr>
+                <tr>
+                    <td class="key key_nearzero">7</td>
+                    <td class="key key_nearzero">8</td>
+                    <td class="key key_nearzero">9</td>
+                    <td class="key_btn key_btn_nearzero">삭제</td>
+                </tr>
+                <tr>
+                    <td class="key_btn key_btn_nearzero">+/-</td>
+                    <td class="key key_nearzero" colspan="2">0</td>
+                    <td class="key_btn key_btn_nearzero">확인</td>
+                </tr>
+              </table>
               <div class="offset-1">
               </div>
               <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
@@ -270,23 +367,9 @@
                     </fieldset>
                   </div>
                   <div class="bg-primary mb-4 ml-1">
-                    <input class="form-control w-25 d-inline-block" disabled type="number" id="configValueText" min="-99999" max="99999">
-                    <button class="btn btn-pill btn-primary" type="button" id="configValueStepUp">
-                      <span class="fas fa-angle-up dropup-arrow"></span>
-                    </button>
-                    <button class="btn btn-pill btn-primary" type="button" id="configValueStepDown">
-                      <span class="fas fa-angle-down dropdown-arrow"></span>
-                    </button>
-                    <div class="bg-primary d-inline-block mt-1 w-40">
-                      <select id="configValueOptionSelect" class="custom-select mr-sm-2">
-                          <option value="1" selected>1</option>
-                          <option value="10">10</option>
-                          <option value="100">100</option>
-                          <option value="1000">1000</option>
-                          <option value="10000">10000</option>
-                      </select>
-                    </div>
+                    <input class="form-control w-25 d-inline-block" id="configValueText">
                   </div>
+
                   <div class="bg-primary mb-4">
                     <fieldset>
                         <div class="form-check">
@@ -308,22 +391,7 @@
                     </fieldset>
                   </div>
                   <div class="bg-primary mb-4 ml-1">
-                    <input class="form-control w-25 d-inline-block" disabled type="number" id="nearZeroText" min="-99999" max="99999">
-                    <button class="btn btn-pill btn-primary" type="button" id="nearZeroStepUp">
-                      <span class="fas fa-angle-up dropup-arrow"></span>
-                    </button>
-                    <button class="btn btn-pill btn-primary" type="button" id="nearZeroStepDown">
-                      <span class="fas fa-angle-down dropdown-arrow"></span>
-                    </button>
-                    <div class="bg-primary d-inline-block mt-1 w-40">
-                      <select id="nearZeroOptionSelect" class="custom-select mr-sm-2">
-                          <option value="1" selected>1</option>
-                          <option value="10">10</option>
-                          <option value="100">100</option>
-                          <option value="1000">1000</option>
-                          <option value="10000">10000</option>
-                      </select>
-                    </div>
+                    <input class="form-control w-25 d-inline-block" id="nearZeroText">
                   </div>
                 </div>
               </div>
@@ -331,6 +399,31 @@
 
             <!--교정설정-->
             <div id="calibrationConfigDiv" class="row p-3" style="display:none">
+              <table class="keypad" id="keypad_capa">
+                <tr>
+                    <td class="key key_capa">1</td>
+                    <td class="key key_capa">2</td>
+                    <td class="key key_capa">3</td>
+                    <td class="key key_capa"></td>
+                </tr>
+                <tr>
+                    <td class="key key_capa">4</td>
+                    <td class="key key_capa">5</td>
+                    <td class="key key_capa">6</td>
+                    <td class="key key_capa"></td>
+                </tr>
+                <tr>
+                    <td class="key key_capa">7</td>
+                    <td class="key key_capa">8</td>
+                    <td class="key key_capa">9</td>
+                    <td class="key_btn key_btn_capa">삭제</td>
+                </tr>
+                <tr>
+                    <td class="key_btn key_btn_capa"></td>
+                    <td class="key key_capa" colspan="2">0</td>
+                    <td class="key_btn key_btn_capa">확인</td>
+                </tr>
+              </table>
               <div class="offset-1">
               </div>
               <div class="col-12 col-sm-4 px-md-0 mb-4 mb-sm-0">
@@ -344,22 +437,7 @@
               <div class="col-12 col-sm-7 px-md-0 mb-4 mb-sm-0">
                 <div class="bg-primary mt-2">
                   <div class="bg-primary mb-3">
-                      <input class="form-control w-25 d-inline-block" disabled type="number" id="capaText" min="1" max="99999">
-                      <button class="btn btn-pill btn-primary" type="button" id="capaStepUp">
-                        <span class="fas fa-angle-up dropup-arrow"></span>
-                      </button>
-                      <button class="btn btn-pill btn-primary" type="button" id="capaStepDown">
-                        <span class="fas fa-angle-down dropdown-arrow"></span>
-                      </button>
-                      <div class="bg-primary d-inline-block mt-1 w-40">
-                        <select id="capaOptionSelect" class="custom-select mr-sm-2">
-                            <option value="1" selected>1</option>
-                            <option value="10">10</option>
-                            <option value="100">100</option>
-                            <option value="1000">1000</option>
-                            <option value="10000">10000</option>
-                        </select>
-                      </div>
+                      <input class="form-control w-25 d-inline-block" id="capaText">
                   </div>
                   <div class="bg-primary mb-3 w-75">
                     <select id="divSelect" class="custom-select mr-sm-2">
@@ -393,6 +471,31 @@
 
             <!--교정(CAL0, CALF)-->
             <div id="calDiv" class="row p-3" style="display:none">
+              <table class="keypad" id="keypad_span">
+                <tr>
+                    <td class="key key_span">1</td>
+                    <td class="key key_span">2</td>
+                    <td class="key key_span">3</td>
+                    <td class="key key_span"></td>
+                </tr>
+                <tr>
+                    <td class="key key_span">4</td>
+                    <td class="key key_span">5</td>
+                    <td class="key key_span">6</td>
+                    <td class="key key_span"></td>
+                </tr>
+                <tr>
+                    <td class="key key_span">7</td>
+                    <td class="key key_span">8</td>
+                    <td class="key key_span">9</td>
+                    <td class="key_btn key_btn_span">삭제</td>
+                </tr>
+                <tr>
+                    <td class="key_btn key_btn_span">+/-</td>
+                    <td class="key key_span" colspan="2">0</td>
+                    <td class="key_btn key_btn_span">확인</td>
+                </tr>
+              </table>
               <div class="col-12 col-sm-6 px-md-0 mb-4 mb-sm-0">
                 <div class="bg-primary my-2 text-center">
                   <h1 class="display-4 mb-3">CAL 0</h1>
@@ -413,22 +516,7 @@
                   <h4 class="mb-3" id="checkCalSpan"></h4>
                 </div>
                 <div class="bg-primary mb-1 text-center">
-                    <input class="form-control w-25 d-inline-block" disabled type="number" id="spanValueText" min="-99999" max="99999">
-                    <button class="btn btn-pill btn-primary" type="button" id="spanValueStepUp">
-                      <span class="fas fa-angle-up dropup-arrow"></span>
-                    </button>
-                    <button class="btn btn-pill btn-primary" type="button" id="spanValueStepDown">
-                      <span class="fas fa-angle-down dropdown-arrow"></span>
-                    </button>
-                    <div class="bg-primary d-inline-block mt-1 w-40">
-                      <select id="spanValueOptionSelect" class="custom-select mr-sm-2">
-                          <option value="1" selected>1</option>
-                          <option value="10">10</option>
-                          <option value="100">100</option>
-                          <option value="1000">1000</option>
-                          <option value="10000">10000</option>
-                      </select>
-                    </div>
+                    <input class="form-control w-25 d-inline-block" id="spanValueText">
                 </div>
               </div>
             </div>
@@ -456,7 +544,6 @@
       </div>
 
       <!--하단 종류 탭-->
-      <!-- <div class="position-relative mt-4 ml-2"> -->
       <div class="fixed-bottom my-4 ml-5">
         <div class="d-inline" style="float:left;">
           <button class="btn btn-primary mr-4 active" style="float:left;" id="serialConfigButton">통신</button>

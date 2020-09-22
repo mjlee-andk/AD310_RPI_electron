@@ -18,6 +18,7 @@
     "nouislider": "^14.5.0",
     "popper.js": "^1.16.1",
     "remote-serial-port-client": "^0.4.0",
-    "serialport": "^9.0.0"
+    "serialport": "^9.0.0",
+    "ws": "^7.3.1"
   }
 }

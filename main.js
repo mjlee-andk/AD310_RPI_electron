@@ -47,8 +47,8 @@ const createWindow = function() {
       nodeIntegration: true
     },
     frame: false,
-    fullscreen: false
-    // fullscreen: true
+    // fullscreen: false
+    fullscreen: true
   })
   win.loadFile('index.html');
   // win.webContents.openDevTools();
@@ -57,20 +57,6 @@ const createWindow = function() {
 
   console.log(currentPlatform);
 
-  const net = require('net');
-  const socket = net.connect({
-    port: 8899,
-    host: '192.168.10.26'
-  });
-
-  socket.on('data', function(data){
-    console.log('DATA:',data.toString('ascii'));
-    // console.log(data);
-  })
-
-  socket.on('error', function(err){
-    console.log('on error:', err.code);
-  })
 }
 
 const openConfigWindow = function() {
@@ -84,6 +70,7 @@ const openConfigWindow = function() {
     },
     frame: false,
     fullscreen: true
+    // fullscreen: false
   })
 
 
@@ -109,6 +96,7 @@ const openPCConfigWindow = function() {
     },
     frame: false,
     fullscreen: true
+    // fullscreen: false
   })
 
   pcConfigWin.loadFile('view/pcconfig.html');
@@ -1268,18 +1256,35 @@ ipcMain.on('get_cal_data', (event, arg) => {
 
 ipcMain.on('init_function_f', (event, arg) => {
   console.log('init_function_f');
-
   initFunctionF();
 })
 
 ipcMain.on('init_config', (event, arg) => {
   console.log('init_config');
-
   initConfig();
 })
 
 ipcMain.on('set_clear_tare', (event, arg) =>{
   console.log('set_clear_tare');
+  setClearTare();
+})
+
+ipcMain.on('set_zero_tare', (event, arg) =>{
+  console.log('set_zero_tare');
+  setZeroTare();
+})
+
+ipcMain.on('set_gross_net', (event, arg) =>{
+  console.log('set_gross_net');
+  setGrossNet();
+})
+
+ipcMain.on('set_hold', (event, arg) =>{
+  console.log('set_hold');
+  setHold();
+})
+
+var setClearTare = function() {
   const command = 'CT' + '\r\n';
   sp.write(command, function(err){
     if(err) {
@@ -1287,10 +1292,9 @@ ipcMain.on('set_clear_tare', (event, arg) =>{
       return;
     }
   })
-})
+}
 
-ipcMain.on('set_zero_tare', (event, arg) =>{
-  console.log('set_zero_tare');
+var setZeroTare = function() {
   const command = 'MZT' + '\r\n';
   sp.write(command, function(err){
     if(err) {
@@ -1298,10 +1302,9 @@ ipcMain.on('set_zero_tare', (event, arg) =>{
       return
     }
   })
-})
+}
 
-ipcMain.on('set_gross_net', (event, arg) =>{
-  console.log('set_gross_net');
+var setGrossNet = function() {
   var command = 'MN' + '\r\n';
 
   if(scale.isNet) {
@@ -1313,10 +1316,9 @@ ipcMain.on('set_gross_net', (event, arg) =>{
       return
     }
   })
-})
+}
 
-ipcMain.on('set_hold', (event, arg) =>{
-  console.log('set_hold');
+var setHold = function() {
   var command = 'HS' + '\r\n';
 
   if(scale.isHold) {
@@ -1328,7 +1330,7 @@ ipcMain.on('set_hold', (event, arg) =>{
       return
     }
   })
-})
+}
 
 ipcMain.on('print', (event, arg) => {
   console.log('print');
@@ -1360,6 +1362,40 @@ ipcMain.on('on_off', (event, arg) => {
   }
 })
 
+var net = require('net');
+var testfunc = function(ls) {
+  var server = net.createServer(function(socket) {
+      // connection event
+      console.log('client connect');
+      socket.write('Welcome to Socket Server');
+      // ls.on('data', function(rx) {
+      //   readHeader(rx);
+      //   socket.write(rx + '\r\n');
+      //   win.webContents.send('rx_data', scale);
+      //   // console.log(rx);
+      //   scale.waiting_sec = 0;
+      //   // isOpen = true;
+      //   changeMainButtonActive(true);
+      // });
+
+      socket.on('data', function(chunk) {
+          var message = chunk.toString();
+          console.log('client send : ', message);
+          if(message == 'MZT\r\n') {
+            setZeroTare();
+          }
+      });
+
+      socket.on('end', function() {
+          console.log('client connection closed');
+      });
+  });
+
+  return server;
+}
+
+var server2;
+
 const startProgram = function() {
   sp = openPort();
 
@@ -1367,10 +1403,23 @@ const startProgram = function() {
   lineStream.on('data', function(rx) {
     readHeader(rx);
     win.webContents.send('rx_data', scale);
+    // console.log(rx);
     scale.waiting_sec = 0;
     isOpen = true;
     changeMainButtonActive(isOpen);
   });
+
+  // server2 = testfunc(lineStream);
+  //
+  // server2.on('listening', function() {
+  //     console.log('Server is listening');
+  // });
+  //
+  // server2.on('close', function() {
+  //     console.log('Server closed');
+  // });
+  //
+  // server2.listen(3100);
 }
 
 const stopProgram = function() {
@@ -1379,8 +1428,9 @@ const stopProgram = function() {
   if(sp != undefined) {
     sp.close(function(err){
       setStreamMode();
+      // server2.close();
       if(err) {
-        console.log(err.message)
+        console.log(err.message);
         return;
       }
       console.log('closed');

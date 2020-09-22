@@ -136,45 +136,26 @@ ipcRenderer.on('main_button_active', (event, isActive) => {
 })
 
 setClearTareButton.addEventListener('click', function(){
-  // setTimeout(function(){
-  //   setClearTareButton.blur();
-  // }, 200)
   ipcRenderer.send('set_clear_tare', 'ok');
 })
 
 setZeroTareButton.addEventListener('click', function(){
-  // setTimeout(function(){
-  //   setZeroTareButton.blur();
-  // }, 200)
   ipcRenderer.send('set_zero_tare', 'ok');
 })
 
 setGrossNetButton.addEventListener('click', function(){
-  // setTimeout(function(){
-  //   setGrossNetButton.blur();
-  // }, 200)
   ipcRenderer.send('set_gross_net', 'ok');
 })
 
 setHoldButton.addEventListener('click', function(){
-  // setTimeout(function(){
-  //   setHoldButton.blur();
-  // }, 200)
   ipcRenderer.send('set_hold', 'ok');
 })
 
 printButton.addEventListener('click', function(){
-  // setTimeout(function(){
-  //   printButton.blur();
-  // }, 200)
   ipcRenderer.send('print', 'ok');
 })
 
 onOffButton.addEventListener('click', function(){
-  setTimeout(function(){
-    // onOffButton.blur();
-  }, 300)
-
   setOnOffView();
 })
 
