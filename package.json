@@ -19,6 +19,6 @@
     "popper.js": "^1.16.1",
     "remote-serial-port-client": "^0.4.0",
     "serialport": "^9.0.0",
-    "ws": "^7.3.1"
+    "ws": "^7.4.6"
   }
 }
